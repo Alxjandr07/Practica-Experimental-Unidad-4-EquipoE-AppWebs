@@ -6,6 +6,8 @@ import ec.edu.uteq.sgroas.entity.Conductor;
 import ec.edu.uteq.sgroas.entity.EstadoConductor;
 import ec.edu.uteq.sgroas.repository.ConductorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class ConductorService {
 
     private final ConductorRepository conductorRepository;
 
+    @Cacheable(value = "conductores", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<ConductorResponse> listar(Pageable pageable) {
         return conductorRepository.findByActivoTrue(pageable)
                 .map(this::mapearAResponse);
@@ -29,6 +32,7 @@ public class ConductorService {
         return mapearAResponse(conductor);
     }
 
+    @CacheEvict(value = "conductores", allEntries = true)
     public ConductorResponse crear(ConductorRequest request) {
         validarCedulaDuplicada(request.cedula());
         validarLicenciaDuplicada(request.numeroLicencia());
@@ -52,6 +56,7 @@ public class ConductorService {
         return mapearAResponse(conductorGuardado);
     }
 
+    @CacheEvict(value = "conductores", allEntries = true)
     public ConductorResponse actualizar(Long id, ConductorRequest request) {
         Conductor conductor = obtenerConductorActivo(id);
 
@@ -80,6 +85,7 @@ public class ConductorService {
         return mapearAResponse(conductorActualizado);
     }
 
+    @CacheEvict(value = "conductores", allEntries = true)
     public void desactivar(Long id) {
         Conductor conductor = obtenerConductorActivo(id);
         conductor.setActivo(false);
