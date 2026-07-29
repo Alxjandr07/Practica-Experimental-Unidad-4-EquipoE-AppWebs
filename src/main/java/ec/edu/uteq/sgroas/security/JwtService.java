@@ -22,6 +22,12 @@ public class JwtService {
     @Value("${app.jwt.expiration-ms}")
     private Long jwtExpirationMs;
 
+    @Value("${app.jwt.issuer}")
+    private String jwtIssuer;
+
+    @Value("${app.jwt.audience}")
+    private String jwtAudience;
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
@@ -29,14 +35,18 @@ public class JwtService {
     public String generarToken(Usuario usuario) {
         Date ahora = new Date();
         Date expiracion = new Date(ahora.getTime() + jwtExpirationMs);
+        String jti = UUID.randomUUID().toString();
 
         return Jwts.builder()
-                .id(UUID.randomUUID().toString())
+                .id(jti)
+                .issuer(jwtIssuer)
                 .subject(usuario.getEmail())
+                .audience().add(jwtAudience).and()
+                .issuedAt(ahora)
+                .notBefore(ahora)
+                .expiration(expiracion)
                 .claim("nombre", usuario.getNombre())
                 .claim("rol", usuario.getRol().name())
-                .issuedAt(ahora)
-                .expiration(expiracion)
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }

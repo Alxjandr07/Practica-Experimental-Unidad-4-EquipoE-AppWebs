@@ -1,15 +1,14 @@
 package ec.edu.uteq.sgroas.exception;
 
-import ec.edu.uteq.sgroas.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.Instant;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,79 +16,66 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> manejarErroresValidacion(
+    public ProblemDetail manejarErroresValidacion(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-        Map<String, String> errores = new HashMap<>();
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        detail.setType(URI.create("https://sgroas.uteq.edu.ec/errors/validation"));
+        detail.setTitle("Error de validacion");
+        detail.setDetail("Existen campos invalidos en la solicitud");
+        detail.setInstance(URI.create(request.getRequestURI()));
 
+        Map<String, String> errores = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errores.put(error.getField(), error.getDefaultMessage())
         );
+        detail.setProperty("errors", errores);
 
-        ErrorResponse response = new ErrorResponse(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                "Existen campos invalidos en la solicitud",
-                request.getRequestURI(),
-                errores
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return detail;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> manejarArgumentosInvalidos(
+    public ProblemDetail manejarArgumentosInvalidos(
             IllegalArgumentException ex,
             HttpServletRequest request
     ) {
-        ErrorResponse response = new ErrorResponse(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                ex.getMessage(),
-                request.getRequestURI(),
-                null
-        );
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        detail.setType(URI.create("https://sgroas.uteq.edu.ec/errors/bad-request"));
+        detail.setTitle("Solicitud invalida");
+        detail.setDetail(ex.getMessage());
+        detail.setInstance(URI.create(request.getRequestURI()));
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return detail;
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> manejarCredencialesInvalidas(
+    public ProblemDetail manejarCredencialesInvalidas(
             BadCredentialsException ex,
             HttpServletRequest request
     ) {
-        ErrorResponse response = new ErrorResponse(
-                Instant.now(),
-                HttpStatus.UNAUTHORIZED.value(),
-                "Unauthorized",
-                "Credenciales invalidas",
-                request.getRequestURI(),
-                null
-        );
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        detail.setType(URI.create("https://sgroas.uteq.edu.ec/errors/unauthorized"));
+        detail.setTitle("Credenciales invalidas");
+        detail.setDetail("El email o la contrasena son incorrectos");
+        detail.setInstance(URI.create(request.getRequestURI()));
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return detail;
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> manejarErrorGeneral(
+    public ProblemDetail manejarErrorGeneral(
             Exception ex,
             HttpServletRequest request
     ) {
         ex.printStackTrace();
 
-        ErrorResponse response = new ErrorResponse(
-                Instant.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                ex.getClass().getSimpleName() + ": " + ex.getMessage(),
-                request.getRequestURI(),
-                null
-        );
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        detail.setType(URI.create("https://sgroas.uteq.edu.ec/errors/internal"));
+        detail.setTitle("Error interno del servidor");
+        detail.setDetail(ex.getClass().getSimpleName() + ": " + ex.getMessage());
+        detail.setInstance(URI.create(request.getRequestURI()));
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return detail;
     }
-
 }
