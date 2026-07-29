@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +23,16 @@ public class ConductorService {
 
     private final ConductorRepository conductorRepository;
 
-    @Cacheable(value = "conductores", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<ConductorResponse> listar(Pageable pageable) {
+        List<ConductorResponse> contenido = listarCacheable(pageable);
+        return new PageImpl<>(contenido, pageable, contenido.size());
+    }
+
+    @Cacheable(value = "conductores", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    public List<ConductorResponse> listarCacheable(Pageable pageable) {
         return conductorRepository.findByActivoTrue(pageable)
-                .map(this::mapearAResponse);
+                .map(this::mapearAResponse)
+                .getContent();
     }
 
     public ConductorResponse buscarPorId(Long id) {
