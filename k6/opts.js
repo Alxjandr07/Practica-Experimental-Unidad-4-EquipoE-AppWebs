@@ -1,7 +1,6 @@
 export const opciones = {
   vus: 50,
   duration: '30s',
-  seed: 42,
   thresholds: {
     http_req_duration: [
       { threshold: 'p(95)<200', abortOnFail: false },

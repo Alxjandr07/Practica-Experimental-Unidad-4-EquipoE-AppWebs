@@ -25,9 +25,9 @@ test:
 
 bench:
 	@echo "Ejecutando benchmarks k6 (3 corridas)..."
-	k6 run --vus 50 --duration 30s k6/script.js --seed 42 --summary-export docs/mediciones/perf/kNN-run1.json
-	k6 run --vus 50 --duration 30s k6/script.js --seed 42 --summary-export docs/mediciones/perf/kNN-run2.json
-	k6 run --vus 50 --duration 30s k6/script.js --seed 42 --summary-export docs/mediciones/perf/kNN-run3.json
+	k6 run k6/script.js --summary-export docs/mediciones/perf/k01-run1.json
+	k6 run k6/script.js --summary-export docs/mediciones/perf/k02-run2.json
+	k6 run k6/script.js --summary-export docs/mediciones/perf/k03-run3.json
 	@echo "Benchmarks completos. Resultados en docs/mediciones/perf/"
 
 audit:

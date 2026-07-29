@@ -45,9 +45,7 @@ export default function (data) {
   const res = http.get(`${BASE_URL}/api/conductores`, {
     headers: {
       'Content-Type': 'application/json',
-    },
-    cookies: {
-      access_token: data.token,
+      'Authorization': `Bearer ${data.token}`,
     },
   });
 
