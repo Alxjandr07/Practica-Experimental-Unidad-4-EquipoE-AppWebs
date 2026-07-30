@@ -1,0 +1,101 @@
+{
+  "info": {
+    "name": "SGROAS API — Entrega 3",
+    "description": "Coleccion de la API REST de SGROAS para la Tercera Entrega (v0.9.0-rc)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "adminEmail", "value": "admin@sgroas.com" },
+    { "key": "adminPassword", "value": "admin123" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Registrar usuario",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombre\":\"Nuevo Usuario\",\"email\":\"nuevo@test.com\",\"password\":\"test123\",\"rol\":\"ROLE_COORDINADOR\"}" }, "url": "{{baseUrl}}/auth/register" }
+        },
+        {
+          "name": "Login exitoso",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"{{adminEmail}}\",\"password\":\"{{adminPassword}}\"}" }, "url": "{{baseUrl}}/auth/login" }
+        },
+        {
+          "name": "Login credenciales invalidas",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"{{adminEmail}}\",\"password\":\"wrongpass\"}" }, "url": "{{baseUrl}}/auth/login" }
+        },
+        {
+          "name": "Login email invalido",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"email\":\"email-invalido\",\"password\":\"test123\"}" }, "url": "{{baseUrl}}/auth/login" }
+        }
+      ]
+    },
+    {
+      "name": "Conductores",
+      "item": [
+        {
+          "name": "Listar conductores",
+          "request": { "method": "GET", "url": "{{baseUrl}}/conductores?page=0&size=10" }
+        },
+        {
+          "name": "Crear conductor",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombres\":\"Juan Carlos\",\"apellidos\":\"Perez Garcia\",\"cedula\":\"1234567890\",\"numeroLicencia\":\"LIC-001\",\"tipoLicencia\":\"B1\",\"fechaVencimientoLicencia\":\"2027-12-31\",\"telefono\":\"0999999999\",\"email\":\"juan.perez@cooperativa.ec\",\"estado\":\"ACTIVO\"}" }, "url": "{{baseUrl}}/conductores" }
+        },
+        {
+          "name": "Buscar conductor por ID",
+          "request": { "method": "GET", "url": "{{baseUrl}}/conductores/1" }
+        },
+        {
+          "name": "Conductor no encontrado (404)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/conductores/9999" }
+        },
+        {
+          "name": "Actualizar conductor",
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombres\":\"Juan Carlos\",\"apellidos\":\"Perez Actualizado\",\"cedula\":\"1234567890\",\"numeroLicencia\":\"LIC-001\",\"tipoLicencia\":\"B1\",\"fechaVencimientoLicencia\":\"2028-01-01\",\"telefono\":\"0999999999\",\"email\":\"juan.perez@cooperativa.ec\",\"estado\":\"ACTIVO\"}" }, "url": "{{baseUrl}}/conductores/1" }
+        },
+        {
+          "name": "Eliminar (desactivar) conductor",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/conductores/1" }
+        },
+        {
+          "name": "Crear conductor 422 validacion",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombres\":\"\",\"apellidos\":\"\",\"cedula\":\"123\",\"numeroLicencia\":\"\",\"tipoLicencia\":\"\",\"fechaVencimientoLicencia\":null,\"estado\":\"\"}" }, "url": "{{baseUrl}}/conductores" }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": { "method": "GET", "url": "{{baseUrl}}/usuarios?page=0&size=10" }
+        },
+        {
+          "name": "Crear usuario",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombre\":\"Operador Prueba\",\"email\":\"operador@test.com\",\"password\":\"test123\",\"rol\":\"ROLE_COORDINADOR\"}" }, "url": "{{baseUrl}}/usuarios" }
+        },
+        {
+          "name": "Buscar usuario por ID",
+          "request": { "method": "GET", "url": "{{baseUrl}}/usuarios/1" }
+        },
+        {
+          "name": "Usuario no encontrado (404)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/usuarios/9999" }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombre\":\"Admin Modificado\",\"email\":\"admin@sgroas.com\",\"password\":\"\",\"rol\":\"ROLE_ADMIN\"}" }, "url": "{{baseUrl}}/usuarios/1" }
+        },
+        {
+          "name": "Eliminar (desactivar) usuario",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/usuarios/1" }
+        },
+        {
+          "name": "Crear usuario 422 email duplicado",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"nombre\":\"Admin Duplicado\",\"email\":\"admin@sgroas.com\",\"password\":\"test123\",\"rol\":\"ROLE_ADMIN\"}" }, "url": "{{baseUrl}}/usuarios" }
+        }
+      ]
+    }
+  ]
+}
