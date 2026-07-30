@@ -1,0 +1,21 @@
+ID Requisito,Nombre,Categoria,Entidad Asociada,Endpoint API,SP Asociado,Archivos Fuente,Estado
+REQ-001,Autenticacion JWT,Seguridad,Usuario,POST /api/auth/login,—,AuthController.java AuthService.java JwtService.java,Implementado
+REQ-002,Registro de Usuarios,Seguridad,Usuario,POST /api/auth/register,—,AuthController.java AuthService.java,Implementado
+REQ-003,Refresh Token,Seguridad,Usuario,POST /api/auth/refresh,—,AuthController.java TokenService.java,Implementado
+REQ-004,Logout,Seguridad,Usuario,POST /api/auth/logout,—,AuthController.java TokenService.java,Implementado
+REQ-005,CRUD Conductores,Gestion,Conductor,GET/POST/PUT/DELETE /api/conductores,fn_licencias_por_vencer,ConductorController.java ConductorService.java ConductorRepository.java,Implementado
+REQ-006,CRUD Vehiculos,Gestion,Vehiculo,GET/POST/PUT/DELETE /api/vehiculos,sp_vehiculos_en_mantenimiento,VehiculoController.java VehiculoService.java VehiculoRepository.java,Implementado
+REQ-007,CRUD Rutas,Gestion,Ruta,GET/POST/PUT/DELETE /api/rutas,sp_reporte_rendimiento_rutas,RutaController.java RutaService.java RutaRepository.java,Implementado
+REQ-008,CRUD Asignaciones,Gestion,AsignacionRuta,GET/POST/PUT/DELETE /api/asignaciones,sp_asignaciones_activas_por_conductor,AsignacionRutaController.java AsignacionRutaService.java AsignacionRutaRepository.java,Implementado
+REQ-009,CRUD Incidentes,Seguridad,Incidente,GET/POST/PUT/DELETE /api/incidentes,sp_obtener_incidentes_por_rango sp_incidentes_por_gravedad,IncidenteController.java IncidenteService.java IncidenteRepository.java,Implementado
+REQ-010,Reporte Incidentes por Rango,Reportes,Incidente,—,sp_obtener_incidentes_por_rango,db/procs/sp_obtener_incidentes_por_rango.sql,Implementado
+REQ-011,Incidentes por Gravedad,Reportes,Incidente,—,sp_incidentes_por_gravedad,db/procs/sp_incidentes_por_gravedad.sql,Implementado
+REQ-012,Asignaciones por Conductor,Reportes,AsignacionRuta,—,sp_asignaciones_activas_por_conductor,db/procs/sp_asignaciones_activas_por_conductor.sql,Implementado
+REQ-013,Vehiculos en Mantenimiento,Reportes,Vehiculo,—,sp_vehiculos_en_mantenimiento,db/procs/sp_vehiculos_en_mantenimiento.sql,Implementado
+REQ-014,Rendimiento de Rutas,Reportes,Ruta,—,sp_reporte_rendimiento_rutas,db/procs/sp_reporte_rendimiento_rutas.sql,Implementado
+REQ-015,Alertas Licencias,Reportes,Conductor,—,fn_licencias_por_vencer,db/procs/fn_licencias_por_vencer.sql,Implementado
+REQ-016,Dashboard Estadisticas,Reportes,Todas,—,fn_estadisticas_generales,db/procs/fn_estadisticas_generales.sql,Implementado
+REQ-017,Cache Redis,Rendimiento,Todas,—,—,RedisConfig.java CacheConfig.java,Implementado
+REQ-018,Documentacion API,Calidad,—,GET /api/docs/swagger-ui.html,—,OpenApiConfig.java,Implementado
+REQ-019,Licencias por Vencer,Reportes,Conductor,—,fn_licencias_por_vencer,db/procs/fn_licencias_por_vencer.sql,Implementado
+REQ-020,Base de Datos Versionada,Infraestructura,Todas,—,—,V1__ V2__ V3__ V4__,Implementado
