@@ -44,6 +44,14 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Wait for services
+        run: |
+          until pg_isready -h localhost -p 5432; do sleep 2; done
+          until redis-cli -h localhost ping; do sleep 2; done
+
       - name: Build and test
         run: ./mvnw clean verify --batch-mode
         env:
