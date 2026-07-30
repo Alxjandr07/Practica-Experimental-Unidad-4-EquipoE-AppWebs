@@ -2,7 +2,10 @@ import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { Shell } from './features/dashboard/shell/shell';
 import { Overview } from './features/dashboard/overview/overview';
-import { Placeholder } from './shared/placeholder/placeholder';
+import { ConductorLista } from './features/conductores/lista/conductor-lista';
+import { ConductorFormulario } from './features/conductores/formulario/conductor-formulario';
+import { UsuarioLista } from './features/usuarios/lista/usuario-lista';
+import { UsuarioFormulario } from './features/usuarios/formulario/usuario-formulario';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -14,13 +17,22 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: Overview },
-      { path: 'usuarios', component: Placeholder, data: { title: 'Usuarios y Roles' } },
-      { path: 'flota', component: Placeholder, data: { title: 'Flota Vehicular' } },
-      { path: 'rutas', component: Placeholder, data: { title: 'Rutas y Frecuencias' } },
-      { path: 'seguridad', component: Placeholder, data: { title: 'Seguridad' } },
-      { path: 'administracion', component: Placeholder, data: { title: 'Administración' } },
-      { path: 'reportes', component: Placeholder, data: { title: 'Reportes' } }
-    ]
+      {
+        path: 'usuarios',
+        children: [
+          { path: '', component: UsuarioLista },
+          { path: 'nuevo', component: UsuarioFormulario },
+          { path: 'editar/:id', component: UsuarioFormulario },
+        ],
+      },
+      {
+        path: 'flota',
+        children: [
+          { path: '', component: ConductorLista },
+          { path: 'nuevo', component: ConductorFormulario },
+          { path: 'editar/:id', component: ConductorFormulario },
+        ],
+      },
+    ],
   },
-  { path: '**', redirectTo: 'login' }
 ];
