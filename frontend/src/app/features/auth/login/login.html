@@ -1,1 +1,83 @@
-<p>login works!</p>
+<div class="login-page">
+  <aside class="login-brand">
+    <div class="brand-tag">
+      <span class="dot"></span>
+      COOPERATIVA DE TRANSPORTE NACIONAL
+    </div>
+
+    <h1 class="brand-title">
+      GESTIÓN<br />
+      <span>EN RUTA.</span>
+    </h1>
+
+    <p class="brand-subtitle">
+      Recursos operativos, administrativos y de seguridad de tu cooperativa, en un solo panel.
+    </p>
+
+    <div class="brand-stats">
+      <div>
+        <strong>07</strong>
+        <span>Módulos activos</span>
+      </div>
+      <div>
+        <strong>24/7</strong>
+        <span>Monitoreo</span>
+      </div>
+      <div>
+        <strong>100%</strong>
+        <span>Trazable</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="login-panel">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <span class="form-tag">ACCESO AL SISTEMA</span>
+      <h2>Iniciar sesión</h2>
+      <p class="form-subtitle">Ingresa tus credenciales para continuar a SGROAS.</p>
+
+      <label for="email">Usuario o correo</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="nombre.apellido@cooperativa.ec"
+      />
+      @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+        <span class="field-error">Ingresa un correo válido.</span>
+      }
+
+      <label for="password">Contraseña</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="••••••••••"
+      />
+      @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+        <span class="field-error">Mínimo 6 caracteres.</span>
+      }
+
+      <div class="form-row">
+        <label class="checkbox">
+          <input type="checkbox" />
+          Recordarme
+        </label>
+        <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      @if (errorMsg()) {
+        <div class="alert-error">{{ errorMsg() }}</div>
+      }
+
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Ingresando...' : 'Ingresar al sistema' }}
+      </button>
+
+      <div class="support-divider"><span>SOPORTE</span></div>
+      <p class="support-text">
+        ¿Problemas para ingresar? Contacta al administrador de tu cooperativa.
+      </p>
+    </form>
+  </main>
+</div>
