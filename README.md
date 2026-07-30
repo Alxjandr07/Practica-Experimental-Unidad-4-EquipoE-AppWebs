@@ -1,5 +1,6 @@
 # SGROAS - Sistema de Gestión de Recursos Operativos, Administrativos y de Seguridad
 
+[![CI](https://github.com/Alxjandr07/SGROAS-ProyectoAppWeb/actions/workflows/ci.yml/badge.svg)](https://github.com/Alxjandr07/SGROAS-ProyectoAppWeb/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://adoptium.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-green)](https://spring.io/projects/spring-boot)
