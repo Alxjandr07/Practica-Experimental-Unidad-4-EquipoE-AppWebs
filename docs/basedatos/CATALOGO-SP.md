@@ -1,0 +1,132 @@
+# Catalogo de Stored Procedures — SGROAS
+
+## Resumen
+
+| # | Nombre | Tipo | Descripcion |
+|---|--------|------|-------------|
+| 1 | `sp_obtener_incidentes_por_rango` | FUNCTION | Incidentes en rango de fechas con JOIN a 5 tablas |
+| 2 | `sp_incidentes_por_gravedad` | FUNCTION | Conteo de incidentes agrupados por gravedad |
+| 3 | `sp_asignaciones_activas_por_conductor` | FUNCTION | Asignaciones activas de un conductor especifico |
+| 4 | `sp_vehiculos_en_mantenimiento` | FUNCTION | Vehiculos en mantenimiento con total de incidentes |
+| 5 | `sp_reporte_rendimiento_rutas` | FUNCTION | Reporte de rendimiento por ruta con metricas |
+| 6 | `fn_licencias_por_vencer` | FUNCTION | Conductores con licencias por vencer |
+| 7 | `fn_estadisticas_generales` | FUNCTION | Estadisticas generales del sistema |
+
+---
+
+## 1. `sp_obtener_incidentes_por_rango`
+
+**Archivo:** `db/procs/sp_obtener_incidentes_por_rango.sql`
+
+Obtiene todos los incidentes en un rango de fechas, incluyendo informacion del conductor, vehiculo y ruta.
+
+**JOINs:** `incidentes` → `asignacion_rutas` → `conductores` + `vehiculos` + `rutas`
+
+**Parametros:**
+
+| Parametro | Tipo | Descripcion |
+|-----------|------|-------------|
+| `p_fecha_desde` | TIMESTAMPTZ | Inicio del rango |
+| `p_fecha_hasta` | TIMESTAMPTZ | Fin del rango |
+
+**Columnas retornadas:** `incidente_id`, `tipo`, `gravedad`, `estado`, `descripcion`, `fecha_incidente`, `ubicacion`, `conductor_nombre`, `vehiculo_placa`, `ruta_codigo`
+
+**Uso:** Reportes operativos, dashboards de seguridad.
+
+---
+
+## 2. `sp_incidentes_por_gravedad`
+
+**Archivo:** `db/procs/sp_incidentes_por_gravedad.sql`
+
+Agrupa y cuenta incidentes por nivel de gravedad, con filtro opcional por tipo.
+
+**Agregaciones:** `COUNT(*)`, `GROUP BY`, `MAX(fecha_incidente)`
+
+**Parametros:**
+
+| Parametro | Tipo | Descripcion |
+|-----------|------|-------------|
+| `p_tipo` | VARCHAR (opcional) | Filtro por tipo de incidente |
+
+**Columnas retornadas:** `gravedad`, `total_incidentes`, `ultimo_incidente`
+
+**Uso:** Metricas de seguridad, analisis de tendencias.
+
+---
+
+## 3. `sp_asignaciones_activas_por_conductor`
+
+**Archivo:** `db/procs/sp_asignaciones_activas_por_conductor.sql`
+
+Devuelve las asignaciones activas de un conductor con datos del vehiculo y la ruta.
+
+**JOINs:** `asignacion_rutas` → `conductores` → `vehiculos` → `rutas`
+
+**Parametros:**
+
+| Parametro | Tipo | Descripcion |
+|-----------|------|-------------|
+| `p_conductor_id` | BIGINT | ID del conductor |
+
+**Columnas retornadas:** `asignacion_id`, `vehiculo_placa`, `vehiculo_marca`, `ruta_codigo`, `ruta_nombre`, `fecha_inicio`, `fecha_fin`
+
+**Uso:** Consulta de ruta actual de un conductor, app movil.
+
+---
+
+## 4. `sp_vehiculos_en_mantenimiento`
+
+**Archivo:** `db/procs/sp_vehiculos_en_mantenimiento.sql`
+
+Lista vehiculos en mantenimiento con conteo de asignaciones e incidentes asociados.
+
+**JOINs:** `vehiculos` → `asignacion_rutas` → `incidentes` (LEFT JOIN)
+
+**Columnas retornadas:** `vehiculo_id`, `placa`, `marca`, `modelo`, `anio`, `total_asignaciones`, `total_incidentes`
+
+**Uso:** Gestion de flota, reportes de mantenimiento.
+
+---
+
+## 5. `sp_reporte_rendimiento_rutas`
+
+**Archivo:** `db/procs/sp_reporte_rendimiento_rutas.sql`
+
+Reporte de rendimiento por ruta con desglose de incidentes por gravedad.
+
+**Agregaciones:** `COUNT(DISTINCT)`, `CASE WHEN`, `AVG`
+
+**Columnas retornadas:** `ruta_id`, `ruta_codigo`, `ruta_nombre`, `total_asignaciones`, `total_incidentes`, `incidentes_criticos`, `incidentes_altos`, `incidentes_medios`, `incidentes_bajos`, `promedio_distancia_km`
+
+**Uso:** Toma de decisiones, planificacion de rutas.
+
+---
+
+## 6. `fn_licencias_por_vencer`
+
+**Archivo:** `db/procs/fn_licencias_por_vencer.sql`
+
+Retorna conductores cuya licencia vence dentro de un umbral de dias.
+
+**Parametros:**
+
+| Parametro | Tipo | Descripcion |
+|-----------|------|-------------|
+| `p_dias_umbral` | INTEGER (default: 30) | Dias para considerar "por vencer" |
+
+**Columnas retornadas:** `conductor_id`, `nombre_completo`, `cedula`, `numero_licencia`, `tipo_licencia`, `fecha_vencimiento`, `asignacion_activa`
+
+**Uso:** Alertas preventivas, renovacion de licencias.
+
+---
+
+## 7. `fn_estadisticas_generales`
+
+**Archivo:** `db/procs/fn_estadisticas_generales.sql`
+
+Estadisticas resumidas del sistema, util para dashboards.
+
+**Columnas retornadas:** `total_conductores`, `conductores_activos`, `total_vehiculos`, `vehiculos_activos`, `total_rutas`, `rutas_activas`, `total_asignaciones`, `asignaciones_activas`, `total_incidentes`, `incidentes_abiertos`
+
+**Uso:** Dashboard principal, KPIs del sistema.

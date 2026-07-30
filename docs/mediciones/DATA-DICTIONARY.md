@@ -47,6 +47,73 @@
 | `creado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de creacion |
 | `actualizado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de ultima modificacion |
 
+### 2.3. `vehiculos`
+
+| Columna | Tipo SQL | Tipo Java | Longitud | Nulo | Unico | Valores | Descripcion |
+|---|---|---|---|---|---|---|---|---|
+| `id` | BIGSERIAL | Long | — | NO | SI | — | Identificador unico |
+| `placa` | VARCHAR(20) | String | 20 | NO | SI | — | Placa del vehiculo |
+| `marca` | VARCHAR(50) | String | 50 | NO | — | — | Marca del vehiculo |
+| `modelo` | VARCHAR(50) | String | 50 | NO | — | — | Modelo del vehiculo |
+| `anio` | INTEGER | Integer | — | NO | — | 1990-2030 | Anio de fabricacion |
+| `capacidad_pasajeros` | INTEGER | Integer | — | NO | — | >= 1 | Capacidad de pasajeros |
+| `numero_motor` | VARCHAR(50) | String | 50 | — | — | — | Numero de motor |
+| `numero_chasis` | VARCHAR(50) | String | 50 | — | — | — | Numero de chasis |
+| `color` | VARCHAR(30) | String | 30 | — | — | — | Color del vehiculo |
+| `estado` | VARCHAR(25) | EstadoVehiculo (enum) | 25 | NO | — | ACTIVO, EN_MANTENIMIENTO, FUERA_DE_SERVICIO | Estado del vehiculo |
+| `activo` | BOOLEAN | Boolean | — | NO | — | true/false | Eliminacion logica |
+| `creado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de creacion |
+| `actualizado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de ultima modificacion |
+
+### 2.4. `rutas`
+
+| Columna | Tipo SQL | Tipo Java | Longitud | Nulo | Unico | Valores | Descripcion |
+|---|---|---|---|---|---|---|---|---|
+| `id` | BIGSERIAL | Long | — | NO | SI | — | Identificador unico |
+| `codigo` | VARCHAR(20) | String | 20 | NO | SI | — | Codigo unico de ruta |
+| `nombre` | VARCHAR(100) | String | 100 | NO | — | — | Nombre de la ruta |
+| `origen` | VARCHAR(150) | String | 150 | NO | — | — | Lugar de origen |
+| `destino` | VARCHAR(150) | String | 150 | NO | — | — | Lugar de destino |
+| `distancia_km` | DOUBLE PRECISION | Double | — | NO | — | >= 0 | Distancia en kilometros |
+| `duracion_estimada_min` | INTEGER | Integer | — | NO | — | >= 1 | Duracion estimada en minutos |
+| `estado` | VARCHAR(10) | EstadoRuta (enum) | 10 | NO | — | ACTIVA, INACTIVA | Estado de la ruta |
+| `activo` | BOOLEAN | Boolean | — | NO | — | true/false | Eliminacion logica |
+| `creado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de creacion |
+| `actualizado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de ultima modificacion |
+
+### 2.5. `asignacion_rutas`
+
+| Columna | Tipo SQL | Tipo Java | Longitud | Nulo | Unico | Valores | Descripcion |
+|---|---|---|---|---|---|---|---|---|
+| `id` | BIGSERIAL | Long | — | NO | SI | — | Identificador unico |
+| `conductor_id` | BIGINT | Long (FK) | — | NO | — | — | FK a conductores |
+| `vehiculo_id` | BIGINT | Long (FK) | — | NO | — | — | FK a vehiculos |
+| `ruta_id` | BIGINT | Long (FK) | — | NO | — | — | FK a rutas |
+| `fecha_asignacion` | DATE | LocalDate | — | NO | — | — | Fecha de asignacion |
+| `fecha_inicio` | DATE | LocalDate | — | NO | — | — | Fecha de inicio |
+| `fecha_fin` | DATE | LocalDate | — | — | — | — | Fecha de fin |
+| `estado` | VARCHAR(15) | EstadoAsignacion (enum) | 15 | NO | — | ACTIVA, COMPLETADA, CANCELADA | Estado de la asignacion |
+| `activo` | BOOLEAN | Boolean | — | NO | — | true/false | Eliminacion logica |
+| `creado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de creacion |
+| `actualizado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de ultima modificacion |
+
+### 2.6. `incidentes`
+
+| Columna | Tipo SQL | Tipo Java | Longitud | Nulo | Unico | Valores | Descripcion |
+|---|---|---|---|---|---|---|---|---|
+| `id` | BIGSERIAL | Long | — | NO | SI | — | Identificador unico |
+| `asignacion_id` | BIGINT | Long (FK) | — | NO | — | — | FK a asignacion_rutas |
+| `reportado_por` | VARCHAR(100) | String | 100 | NO | — | — | Persona que reporta |
+| `tipo` | VARCHAR(25) | TipoIncidente (enum) | 25 | NO | — | ACCIDENTE, AVERIA_MECANICA, INFRACCION, QUEJA, OTRO | Tipo de incidente |
+| `descripcion` | TEXT | String | — | NO | — | — | Descripcion detallada |
+| `fecha_incidente` | TIMESTAMPTZ | LocalDateTime | — | NO | — | — | Fecha y hora del incidente |
+| `ubicacion` | VARCHAR(255) | String | 255 | — | — | — | Ubicacion del incidente |
+| `gravedad` | VARCHAR(10) | GravedadIncidente (enum) | 10 | NO | — | BAJA, MEDIA, ALTA, CRITICA | Nivel de gravedad |
+| `estado` | VARCHAR(20) | EstadoIncidente (enum) | 20 | NO | — | REPORTADO, EN_INVESTIGACION, RESUELTO, CERRADO | Estado del incidente |
+| `activo` | BOOLEAN | Boolean | — | NO | — | true/false | Eliminacion logica |
+| `creado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de creacion |
+| `actualizado_en` | TIMESTAMPTZ | Instant | — | NO | — | — | Timestamp de ultima modificacion |
+
 ## 3. DTOs (API REST)
 
 ### 3.1. `LoginRequest`
@@ -176,4 +243,24 @@
 | POST | `/api/conductores` | ADMIN, COORDINADOR | Crear conductor |
 | PUT | `/api/conductores/{id}` | ADMIN, COORDINADOR | Actualizar conductor |
 | DELETE | `/api/conductores/{id}` | ADMIN, COORDINADOR | Eliminar conductor (logico) |
+| GET | `/api/vehiculos` | ADMIN, COORDINADOR | Listar vehiculos |
+| GET | `/api/vehiculos/{id}` | ADMIN, COORDINADOR | Obtener vehiculo por ID |
+| POST | `/api/vehiculos` | ADMIN, COORDINADOR | Crear vehiculo |
+| PUT | `/api/vehiculos/{id}` | ADMIN, COORDINADOR | Actualizar vehiculo |
+| DELETE | `/api/vehiculos/{id}` | ADMIN, COORDINADOR | Eliminar vehiculo (logico) |
+| GET | `/api/rutas` | ADMIN, COORDINADOR | Listar rutas |
+| GET | `/api/rutas/{id}` | ADMIN, COORDINADOR | Obtener ruta por ID |
+| POST | `/api/rutas` | ADMIN, COORDINADOR | Crear ruta |
+| PUT | `/api/rutas/{id}` | ADMIN, COORDINADOR | Actualizar ruta |
+| DELETE | `/api/rutas/{id}` | ADMIN, COORDINADOR | Eliminar ruta (logico) |
+| GET | `/api/asignaciones` | ADMIN, COORDINADOR | Listar asignaciones |
+| GET | `/api/asignaciones/{id}` | ADMIN, COORDINADOR | Obtener asignacion por ID |
+| POST | `/api/asignaciones` | ADMIN, COORDINADOR | Crear asignacion |
+| PUT | `/api/asignaciones/{id}` | ADMIN, COORDINADOR | Actualizar asignacion |
+| DELETE | `/api/asignaciones/{id}` | ADMIN, COORDINADOR | Eliminar asignacion (logico) |
+| GET | `/api/incidentes` | ADMIN, COORDINADOR, SEGURIDAD | Listar incidentes |
+| GET | `/api/incidentes/{id}` | ADMIN, COORDINADOR, SEGURIDAD | Obtener incidente por ID |
+| POST | `/api/incidentes` | ADMIN, COORDINADOR, SEGURIDAD | Crear incidente |
+| PUT | `/api/incidentes/{id}` | ADMIN, COORDINADOR, SEGURIDAD | Actualizar incidente |
+| DELETE | `/api/incidentes/{id}` | ADMIN, COORDINADOR, SEGURIDAD | Eliminar incidente (logico) |
 | GET | `/api/docs/swagger-ui.html` | No | Documentacion OpenAPI 3.0 |
