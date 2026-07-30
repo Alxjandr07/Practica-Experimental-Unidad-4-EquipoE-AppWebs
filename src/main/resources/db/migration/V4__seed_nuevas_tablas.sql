@@ -28,24 +28,22 @@ ON CONFLICT (codigo) DO NOTHING;
 -- ============================================================
 -- ASIGNACIONES
 -- ============================================================
--- Requiere que existan conductores de seed.sql para funcionar correctamente
 INSERT INTO asignacion_rutas (conductor_id, vehiculo_id, ruta_id, fecha_asignacion, fecha_inicio, fecha_fin, estado)
-SELECT
-    c.id, v.id, r.id, '2026-07-01'::date, '2026-07-01'::date, NULL::date, 'ACTIVA'
+SELECT c.id, v.id, r.id, '2026-07-01'::date, '2026-07-01'::date, NULL::date, 'ACTIVA'
 FROM conductores c, vehiculos v, rutas r
 WHERE c.cedula = '1234567890'
   AND v.placa = 'ABC-1234'
-  AND r.codigo = 'R-001'
-UNION ALL
-SELECT
-    c.id, v.id, r.id, '2026-07-01'::date, '2026-07-01'::date, '2026-07-30'::date, 'COMPLETADA'
+  AND r.codigo = 'R-001';
+
+INSERT INTO asignacion_rutas (conductor_id, vehiculo_id, ruta_id, fecha_asignacion, fecha_inicio, fecha_fin, estado)
+SELECT c.id, v.id, r.id, '2026-07-01'::date, '2026-07-01'::date, '2026-07-30'::date, 'COMPLETADA'
 FROM conductores c, vehiculos v, rutas r
 WHERE c.cedula = '0987654321'
   AND v.placa = 'DEF-5678'
-  AND r.codigo = 'R-002'
-UNION ALL
-SELECT
-    c.id, v.id, r.id, '2026-07-15'::date, '2026-07-15'::date, NULL::date, 'ACTIVA'
+  AND r.codigo = 'R-002';
+
+INSERT INTO asignacion_rutas (conductor_id, vehiculo_id, ruta_id, fecha_asignacion, fecha_inicio, fecha_fin, estado)
+SELECT c.id, v.id, r.id, '2026-07-15'::date, '2026-07-15'::date, NULL::date, 'ACTIVA'
 FROM conductores c, vehiculos v, rutas r
 WHERE c.cedula = '1234567890'
   AND v.placa = 'GHI-9012'
@@ -55,18 +53,17 @@ WHERE c.cedula = '1234567890'
 -- INCIDENTES
 -- ============================================================
 INSERT INTO incidentes (asignacion_id, reportado_por, tipo, descripcion, fecha_incidente, ubicacion, gravedad, estado)
-SELECT
-    ar.id, 'Coordinador Principal', 'AVERIA_MECANICA',
-    'Fallo en el sistema de frenos reportado durante la ruta matutina',
-    '2026-07-10 08:30:00'::timestamptz, 'Av. Principal km 5', 'ALTA', 'RESUELTO'
+SELECT ar.id, 'Coordinador Principal', 'AVERIA_MECANICA',
+       'Fallo en el sistema de frenos reportado durante la ruta matutina',
+       '2026-07-10 08:30:00'::timestamptz, 'Av. Principal km 5', 'ALTA', 'RESUELTO'
 FROM asignacion_rutas ar
 WHERE ar.estado = 'COMPLETADA'
-LIMIT 1
-UNION ALL
-SELECT
-    ar.id, 'Seguridad General', 'INFRACCION',
-    'Exceso de velocidad detectado en el modulo GPS',
-    '2026-07-20 14:15:00'::timestamptz, 'Via a Quevedo', 'MEDIA', 'EN_INVESTIGACION'
+LIMIT 1;
+
+INSERT INTO incidentes (asignacion_id, reportado_por, tipo, descripcion, fecha_incidente, ubicacion, gravedad, estado)
+SELECT ar.id, 'Seguridad General', 'INFRACCION',
+       'Exceso de velocidad detectado en el modulo GPS',
+       '2026-07-20 14:15:00'::timestamptz, 'Via a Quevedo', 'MEDIA', 'EN_INVESTIGACION'
 FROM asignacion_rutas ar
 WHERE ar.estado = 'ACTIVA'
 LIMIT 1;
