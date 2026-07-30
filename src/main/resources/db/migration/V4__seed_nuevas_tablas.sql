@@ -31,21 +31,21 @@ ON CONFLICT (codigo) DO NOTHING;
 -- Requiere que existan conductores de seed.sql para funcionar correctamente
 INSERT INTO asignacion_rutas (conductor_id, vehiculo_id, ruta_id, fecha_asignacion, fecha_inicio, fecha_fin, estado)
 SELECT
-    c.id, v.id, r.id, '2026-07-01', '2026-07-01', NULL, 'ACTIVA'
+    c.id, v.id, r.id, '2026-07-01'::date, '2026-07-01'::date, NULL::date, 'ACTIVA'
 FROM conductores c, vehiculos v, rutas r
 WHERE c.cedula = '1234567890'
   AND v.placa = 'ABC-1234'
   AND r.codigo = 'R-001'
 UNION ALL
 SELECT
-    c.id, v.id, r.id, '2026-07-01', '2026-07-01', '2026-07-30', 'COMPLETADA'
+    c.id, v.id, r.id, '2026-07-01'::date, '2026-07-01'::date, '2026-07-30'::date, 'COMPLETADA'
 FROM conductores c, vehiculos v, rutas r
 WHERE c.cedula = '0987654321'
   AND v.placa = 'DEF-5678'
   AND r.codigo = 'R-002'
 UNION ALL
 SELECT
-    c.id, v.id, r.id, '2026-07-15', '2026-07-15', NULL, 'ACTIVA'
+    c.id, v.id, r.id, '2026-07-15'::date, '2026-07-15'::date, NULL::date, 'ACTIVA'
 FROM conductores c, vehiculos v, rutas r
 WHERE c.cedula = '1234567890'
   AND v.placa = 'GHI-9012'
