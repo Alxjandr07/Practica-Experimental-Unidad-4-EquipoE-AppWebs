@@ -1,0 +1,15 @@
+﻿# A05 - Mala configuracion (Security Headers)
+# Fecha: 2026-07-30 00:09:03
+
+## Headers de seguridad implementados:
+HTTP/1.1 200  Vary: Origin Vary: Access-Control-Request-Method Vary: Access-Control-Request-Headers Set-Cookie: access_token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJhYTFlYzVjMi1kMWRkLTRmMTMtOTQ2Ny1jZjI2YzAwMjk4M2YiLCJpc3MiOiJodHRwczovL3Nncm9hcy51dGVxLmVkdS5lYyIsInN1YiI6ImFkbWluQHNncm9hcy5jb20iLCJhdWQiOlsic2dyb2FzLWZyb250ZW5kIl0sImlhdCI6MTc4NTM4ODE0MywibmJmIjoxNzg1Mzg4MTQzLCJleHAiOjE3ODUzOTE3NDMsIm5vbWJyZSI6IkFkbWluIFNHUk9BUyIsInJvbCI6IlJPTEVfQURNSU4ifQ.99N675E7ZcxB57VRbWp2dsMxYB-CxCMObCVAn2d67tY; Path=/; Max-Age=3600; Expires=Thu, 30 Jul 2026 06:09:03 GMT; Secure; HttpOnly; SameSite=Strict X-Content-Type-Options: nosniff X-XSS-Protection: 0 Cache-Control: no-cache, no-store, max-age=0, must-revalidate Pragma: no-cache Expires: 0 X-Frame-Options: DENY Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' Content-Type: application/json Transfer-Encoding: chunked Date: Thu, 30 Jul 2026 05:09:03 GMT 
+
+## Verificacion de codigo (SecurityConfig.java):
+- HSTS: includeSubDomains, max-age=31536000 (1 año)
+- X-Frame-Options: DENY
+- X-Content-Type-Options: nosniff
+- X-XSS-Protection: habilitado
+- Content-Security-Policy: default-src 'self'
+- CORS: solo http://localhost:4200
+- CSRF: deshabilitado (API stateless con JWT)
+- Cookie: HttpOnly + Secure + SameSite=Strict

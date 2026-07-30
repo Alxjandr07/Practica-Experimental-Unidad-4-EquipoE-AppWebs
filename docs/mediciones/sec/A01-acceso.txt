@@ -1,0 +1,14 @@
+﻿# A01 - Control de acceso
+# Fecha: 2026-07-30 00:08:37
+
+## A01-01: Sin autenticacion a /api/conductores
+HTTP_CODE:403
+
+## A01-02: Login exitoso (token obtenido)
+AccessToken: eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjNjYzNzY4Yy04Y2FkLTRjMGMtYjU5NC0zNTQ0ZjUxZjBiYmE...
+
+## A01-03: Con token valido a /api/conductores
+{"content":[],"pageable":{"pageNumber":0,"pageSize":10,"sort":{"sorted":true,"empty":false,"unsorted":false},"offset":0,"paged":true,"unpaged":false},"totalElements":0,"totalPages":0,"last":true,"size":10,"number":0,"sort":{"sorted":true,"empty":false,"unsorted":false},"numberOfElements":0,"first":true,"empty":true} HTTP_CODE:200
+
+## A01-04: CORS desde origen no permitido
+Invalid CORS request HTTP_CODE:403

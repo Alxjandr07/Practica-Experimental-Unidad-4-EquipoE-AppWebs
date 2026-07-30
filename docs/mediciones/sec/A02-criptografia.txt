@@ -1,0 +1,14 @@
+﻿# A02 - Fallo criptografico
+# Fecha: 2026-07-30 00:08:51
+
+## A02-01: Cookie Set-Cookie headers (HttpOnly, Secure, SameSite=Strict)
+HTTP/1.1 200  Vary: Origin Vary: Access-Control-Request-Method Vary: Access-Control-Request-Headers Set-Cookie: access_token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjYzg0MjgyYi01N2VmLTQ0NzUtYmU4NC1lMGI2ODg2MDA0MGEiLCJpc3MiOiJodHRwczovL3Nncm9hcy51dGVxLmVkdS5lYyIsInN1YiI6ImFkbWluQHNncm9hcy5jb20iLCJhdWQiOlsic2dyb2FzLWZyb250ZW5kIl0sImlhdCI6MTc4NTM4ODEzMCwibmJmIjoxNzg1Mzg4MTMwLCJleHAiOjE3ODUzOTE3MzAsIm5vbWJyZSI6IkFkbWluIFNHUk9BUyIsInJvbCI6IlJPTEVfQURNSU4ifQ.PLEnTjmuDMd0keFYr-9CcnqoDuQ4t5EnLHi6i0zREw4; Path=/; Max-Age=3600; Expires=Thu, 30 Jul 2026 06:08:50 GMT; Secure; HttpOnly; SameSite=Strict X-Content-Type-Options: nosniff X-XSS-Protection: 0 Cache-Control: no-cache, no-store, max-age=0, must-revalidate Pragma: no-cache Expires: 0 X-Frame-Options: DENY Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' Content-Type: application/json Transfer-Encoding: chunked Date: Thu, 30 Jul 2026 05:08:50 GMT  {"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjYzg0MjgyYi01N2VmLTQ0NzUtYmU4NC1lMGI2ODg2MDA0MGEiLCJpc3MiOiJodHRwczovL3Nncm9hcy51dGVxLmVkdS5lYyIsInN1YiI6ImFkbWluQHNncm9hcy5jb20iLCJhdWQiOlsic2dyb2FzLWZyb250ZW5kIl0sImlhdCI6MTc4NTM4ODEzMCwibmJmIjoxNzg1Mzg4MTMwLCJleHAiOjE3ODUzOTE3MzAsIm5vbWJyZSI6IkFkbWluIFNHUk9BUyIsInJvbCI6IlJPTEVfQURNSU4ifQ.PLEnTjmuDMd0keFYr-9CcnqoDuQ4t5EnLHi6i0zREw4","refreshToken":"643f8fb8-8b23-4abf-955c-d29ae9f51bc3","tokenType":"Bearer","expiresIn":3600000,"nombre":"Admin SGROAS","email":"admin@sgroas.com","rol":"ROLE_ADMIN"}
+
+## A02-02: JWT payload (7 claims RFC 7519)
+{"jti":"fdc58592-b5fd-47fa-bbcd-1fb5a90fdfe1","iss":"https://sgroas.uteq.edu.ec","sub":"admin@sgroas.com","aud":["sgroas-frontend"],"iat":1785388131,"nbf":1785388131,"exp":1785391731,"nombre":"Admin SGROAS","rol":"ROLE_ADMIN"}
+
+## A02-03: Resumen de seguridad criptografica
+- Algoritmo: HS256 (HMAC-SHA256)
+- Cookie: HttpOnly=true, Secure=true, SameSite=Strict
+- JWT: 7 claims implementados (iss, sub, aud, exp, nbf, iat, jti)
+- Clave: minimo 32 caracteres (configurada externamente)
