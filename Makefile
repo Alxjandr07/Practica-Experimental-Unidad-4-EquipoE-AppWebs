@@ -21,7 +21,8 @@ down:
 	docker compose down -v
 
 test:
-	docker compose run --rm backend ./mvnw test
+	./mvnw test
+	@echo "Reporte JaCoCo generado en docs/mediciones/jacoco/"
 
 bench:
 	@echo "Ejecutando benchmarks k6 (3 corridas)..."
