@@ -47,6 +47,9 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x mvnw
 
+      - name: Install redis-cli
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq redis-tools
+
       - name: Wait for services
         run: |
           until pg_isready -h localhost -p 5432; do sleep 2; done
