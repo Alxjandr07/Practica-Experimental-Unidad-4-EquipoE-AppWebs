@@ -39,3 +39,7 @@ build/
 frontend/node_modules/
 frontend/dist/
 
+### Runtime logs ###
+backend.err
+backend.log
+

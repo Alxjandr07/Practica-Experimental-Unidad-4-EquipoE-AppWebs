@@ -20,19 +20,19 @@ import java.util.Map;
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-<span class="nc" id="L23">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);</span>
-<span class="nc" id="L24">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/validation&quot;));</span>
-<span class="nc" id="L25">        detail.setTitle(&quot;Error de validacion&quot;);</span>
-<span class="nc" id="L26">        detail.setDetail(&quot;Existen campos invalidos en la solicitud&quot;);</span>
-<span class="nc" id="L27">        detail.setInstance(URI.create(request.getRequestURI()));</span>
+<span class="fc" id="L23">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);</span>
+<span class="fc" id="L24">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/validation&quot;));</span>
+<span class="fc" id="L25">        detail.setTitle(&quot;Error de validacion&quot;);</span>
+<span class="fc" id="L26">        detail.setDetail(&quot;Existen campos invalidos en la solicitud&quot;);</span>
+<span class="fc" id="L27">        detail.setInstance(URI.create(request.getRequestURI()));</span>
 
-<span class="nc" id="L29">        Map&lt;String, String&gt; errores = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L30">        ex.getBindingResult().getFieldErrors().forEach(error -&gt;</span>
-<span class="nc" id="L31">                errores.put(error.getField(), error.getDefaultMessage())</span>
+<span class="fc" id="L29">        Map&lt;String, String&gt; errores = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L30">        ex.getBindingResult().getFieldErrors().forEach(error -&gt;</span>
+<span class="fc" id="L31">                errores.put(error.getField(), error.getDefaultMessage())</span>
         );
-<span class="nc" id="L33">        detail.setProperty(&quot;errors&quot;, errores);</span>
+<span class="fc" id="L33">        detail.setProperty(&quot;errors&quot;, errores);</span>
 
-<span class="nc" id="L35">        return detail;</span>
+<span class="fc" id="L35">        return detail;</span>
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -40,13 +40,13 @@ import java.util.Map;
             IllegalArgumentException ex,
             HttpServletRequest request
     ) {
-<span class="nc" id="L43">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);</span>
-<span class="nc" id="L44">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/bad-request&quot;));</span>
-<span class="nc" id="L45">        detail.setTitle(&quot;Solicitud invalida&quot;);</span>
-<span class="nc" id="L46">        detail.setDetail(ex.getMessage());</span>
-<span class="nc" id="L47">        detail.setInstance(URI.create(request.getRequestURI()));</span>
+<span class="fc" id="L43">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L44">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/bad-request&quot;));</span>
+<span class="fc" id="L45">        detail.setTitle(&quot;Solicitud invalida&quot;);</span>
+<span class="fc" id="L46">        detail.setDetail(ex.getMessage());</span>
+<span class="fc" id="L47">        detail.setInstance(URI.create(request.getRequestURI()));</span>
 
-<span class="nc" id="L49">        return detail;</span>
+<span class="fc" id="L49">        return detail;</span>
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -54,13 +54,13 @@ import java.util.Map;
             BadCredentialsException ex,
             HttpServletRequest request
     ) {
-<span class="nc" id="L57">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);</span>
-<span class="nc" id="L58">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/unauthorized&quot;));</span>
-<span class="nc" id="L59">        detail.setTitle(&quot;Credenciales invalidas&quot;);</span>
-<span class="nc" id="L60">        detail.setDetail(&quot;El email o la contrasena son incorrectos&quot;);</span>
-<span class="nc" id="L61">        detail.setInstance(URI.create(request.getRequestURI()));</span>
+<span class="fc" id="L57">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);</span>
+<span class="fc" id="L58">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/unauthorized&quot;));</span>
+<span class="fc" id="L59">        detail.setTitle(&quot;Credenciales invalidas&quot;);</span>
+<span class="fc" id="L60">        detail.setDetail(&quot;El email o la contrasena son incorrectos&quot;);</span>
+<span class="fc" id="L61">        detail.setInstance(URI.create(request.getRequestURI()));</span>
 
-<span class="nc" id="L63">        return detail;</span>
+<span class="fc" id="L63">        return detail;</span>
     }
 
     @ExceptionHandler(Exception.class)
@@ -68,15 +68,15 @@ import java.util.Map;
             Exception ex,
             HttpServletRequest request
     ) {
-<span class="nc" id="L71">        ex.printStackTrace();</span>
+<span class="fc" id="L71">        ex.printStackTrace();</span>
 
-<span class="nc" id="L73">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);</span>
-<span class="nc" id="L74">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/internal&quot;));</span>
-<span class="nc" id="L75">        detail.setTitle(&quot;Error interno del servidor&quot;);</span>
-<span class="nc" id="L76">        detail.setDetail(ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage());</span>
-<span class="nc" id="L77">        detail.setInstance(URI.create(request.getRequestURI()));</span>
+<span class="fc" id="L73">        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="fc" id="L74">        detail.setType(URI.create(&quot;https://sgroas.uteq.edu.ec/errors/internal&quot;));</span>
+<span class="fc" id="L75">        detail.setTitle(&quot;Error interno del servidor&quot;);</span>
+<span class="fc" id="L76">        detail.setDetail(ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage());</span>
+<span class="fc" id="L77">        detail.setInstance(URI.create(request.getRequestURI()));</span>
 
-<span class="nc" id="L79">        return detail;</span>
+<span class="fc" id="L79">        return detail;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

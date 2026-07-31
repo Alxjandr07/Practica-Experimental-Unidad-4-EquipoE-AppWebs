@@ -20,15 +20,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-<span class="nc" id="L23">        Usuario usuario = usuarioRepository.findByEmail(email)</span>
-<span class="nc" id="L24">                .filter(Usuario::getActivo)</span>
-<span class="nc" id="L25">                .orElseThrow(() -&gt; new UsernameNotFoundException(&quot;Usuario no encontrado&quot;));</span>
+<span class="fc" id="L23">        Usuario usuario = usuarioRepository.findByEmail(email)</span>
+<span class="fc" id="L24">                .filter(Usuario::getActivo)</span>
+<span class="fc" id="L25">                .orElseThrow(() -&gt; new UsernameNotFoundException(&quot;Usuario no encontrado&quot;));</span>
 
-<span class="nc" id="L27">        return new User(</span>
-<span class="nc" id="L28">                usuario.getEmail(),</span>
-<span class="nc" id="L29">                usuario.getPasswordHash(),</span>
-<span class="nc" id="L30">                List.of(new SimpleGrantedAuthority(usuario.getRol().name()))</span>
+<span class="fc" id="L27">        return new User(</span>
+<span class="fc" id="L28">                usuario.getEmail(),</span>
+<span class="fc" id="L29">                usuario.getPasswordHash(),</span>
+<span class="fc" id="L30">                List.of(new SimpleGrantedAuthority(usuario.getRol().name()))</span>
         );
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

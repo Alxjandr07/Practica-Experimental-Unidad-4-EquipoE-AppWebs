@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoginRateLimiter {
 
-    private final ConcurrentHashMap<String, int[]> intentos = new ConcurrentHashMap<>();
-    private static final int MAX_INTENTOS = 6;
+    private final ConcurrentHashMap<String, long[]> intentos = new ConcurrentHashMap<>();
+    private static final long MAX_INTENTOS = 6;
     private static final long VENTANA_MS = 60_000;
 
     public boolean estaBloqueado(String ip) {
-        int[] datos = intentos.get(ip);
+        long[] datos = intentos.get(ip);
         if (datos == null) return false;
         long ahora = System.currentTimeMillis();
         if (ahora - datos[1] > VENTANA_MS) {
@@ -23,8 +23,8 @@ public class LoginRateLimiter {
 
     public void registrarIntentoFallido(String ip) {
         intentos.compute(ip, (k, v) -> {
-            if (v == null) return new int[]{1, (int) System.currentTimeMillis()};
-            if (System.currentTimeMillis() - v[1] > VENTANA_MS) return new int[]{1, (int) System.currentTimeMillis()};
+            if (v == null) return new long[]{1, System.currentTimeMillis()};
+            if (System.currentTimeMillis() - v[1] > VENTANA_MS) return new long[]{1, System.currentTimeMillis()};
             v[0]++;
             return v;
         });

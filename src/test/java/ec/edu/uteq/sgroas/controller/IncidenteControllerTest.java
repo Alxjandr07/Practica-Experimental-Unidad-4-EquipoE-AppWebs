@@ -1,0 +1,120 @@
+package ec.edu.uteq.sgroas.controller;
+
+import ec.edu.uteq.sgroas.dto.IncidenteResponse;
+import ec.edu.uteq.sgroas.service.IncidenteService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
+import org.springframework.data.web.config.SpringDataJacksonConfiguration;
+import org.springframework.data.web.config.SpringDataWebSettings;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@ExtendWith(MockitoExtension.class)
+class IncidenteControllerTest {
+
+    @Mock
+    private IncidenteService incidenteService;
+
+    private MockMvc mockMvc() {
+        return MockMvcBuilders.standaloneSetup(new IncidenteController(incidenteService))
+                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+                .setMessageConverters(new MappingJackson2HttpMessageConverter(
+                        Jackson2ObjectMapperBuilder.json()
+                                .modulesToInstall(new SpringDataJacksonConfiguration.PageModule(
+                                        new SpringDataWebSettings(PageSerializationMode.DIRECT)))
+                                .build()))
+                .build();
+    }
+
+    private IncidenteResponse responseEjemplo() {
+        return new IncidenteResponse(
+                1L, 1L, "Carlos Mendoza", "AVERIA_MECANICA",
+                "Falla en el motor", LocalDateTime.now(), "Km 12 Via Quito",
+                "MEDIA", "REPORTADO", true, Instant.now(), Instant.now()
+        );
+    }
+
+    @Test
+    void listarDebeRetornar200() throws Exception {
+        when(incidenteService.listar(any()))
+                .thenReturn(new PageImpl<>(List.of(responseEjemplo())));
+
+        mockMvc().perform(get("/api/incidentes"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void buscarPorIdDebeRetornar200() throws Exception {
+        when(incidenteService.buscarPorId(1L)).thenReturn(responseEjemplo());
+
+        mockMvc().perform(get("/api/incidentes/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gravedad").value("MEDIA"));
+    }
+
+    @Test
+    void crearDebeRetornar201() throws Exception {
+        when(incidenteService.crear(any())).thenReturn(responseEjemplo());
+
+        mockMvc().perform(post("/api/incidentes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "asignacionId": 1,
+                                  "reportadoPor": "Carlos Mendoza",
+                                  "tipo": "AVERIA_MECANICA",
+                                  "descripcion": "Falla en el motor",
+                                  "fechaIncidente": "2026-07-30T10:00:00",
+                                  "ubicacion": "Km 12 Via Quito",
+                                  "gravedad": "MEDIA",
+                                  "estado": "REPORTADO"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    void actualizarDebeRetornar200() throws Exception {
+        when(incidenteService.actualizar(any(), any())).thenReturn(responseEjemplo());
+
+        mockMvc().perform(put("/api/incidentes/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "asignacionId": 1,
+                                  "reportadoPor": "Carlos Mendoza",
+                                  "tipo": "AVERIA_MECANICA",
+                                  "descripcion": "Falla en el motor",
+                                  "fechaIncidente": "2026-07-30T10:00:00",
+                                  "ubicacion": "Km 12 Via Quito",
+                                  "gravedad": "MEDIA",
+                                  "estado": "REPORTADO"
+                                }
+                                """))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void desactivarDebeRetornar204() throws Exception {
+        mockMvc().perform(delete("/api/incidentes/1"))
+                .andExpect(status().isNoContent());
+    }
+}

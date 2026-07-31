@@ -29,23 +29,23 @@ public class AuthService {
     private Long refreshExpirationMs;
 
     public AuthResponse registrar(RegisterRequest request) {
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (usuarioRepository.existsByEmail(request.email())) {</span>
-<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;Ya existe un usuario con ese email&quot;);</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (usuarioRepository.existsByEmail(request.email())) {</span>
+<span class="fc" id="L33">            throw new IllegalArgumentException(&quot;Ya existe un usuario con ese email&quot;);</span>
         }
 
-<span class="nc" id="L36">        Usuario usuario = Usuario.builder()</span>
-<span class="nc" id="L37">                .nombre(request.nombre())</span>
-<span class="nc" id="L38">                .email(request.email())</span>
-<span class="nc" id="L39">                .passwordHash(passwordEncoder.encode(request.password()))</span>
-<span class="nc" id="L40">                .rol(convertirRol(request.rol()))</span>
-<span class="nc" id="L41">                .activo(true)</span>
-<span class="nc" id="L42">                .creadoEn(Instant.now())</span>
-<span class="nc" id="L43">                .actualizadoEn(Instant.now())</span>
-<span class="nc" id="L44">                .build();</span>
+<span class="fc" id="L36">        Usuario usuario = Usuario.builder()</span>
+<span class="fc" id="L37">                .nombre(request.nombre())</span>
+<span class="fc" id="L38">                .email(request.email())</span>
+<span class="fc" id="L39">                .passwordHash(passwordEncoder.encode(request.password()))</span>
+<span class="fc" id="L40">                .rol(convertirRol(request.rol()))</span>
+<span class="fc" id="L41">                .activo(true)</span>
+<span class="fc" id="L42">                .creadoEn(Instant.now())</span>
+<span class="fc" id="L43">                .actualizadoEn(Instant.now())</span>
+<span class="fc" id="L44">                .build();</span>
 
-<span class="nc" id="L46">        Usuario usuarioGuardado = usuarioRepository.save(usuario);</span>
+<span class="fc" id="L46">        Usuario usuarioGuardado = usuarioRepository.save(usuario);</span>
 
-<span class="nc" id="L48">        return generarRespuestaAutenticacion(usuarioGuardado);</span>
+<span class="fc" id="L48">        return generarRespuestaAutenticacion(usuarioGuardado);</span>
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -61,21 +61,21 @@ public class AuthService {
     }
 
     public AuthResponse refresh(RefreshTokenRequest request) {
-<span class="nc" id="L64">        String email = tokenService.obtenerEmailDesdeRefreshToken(request.refreshToken());</span>
+<span class="fc" id="L64">        String email = tokenService.obtenerEmailDesdeRefreshToken(request.refreshToken());</span>
 
-<span class="nc" id="L66">        Usuario usuario = usuarioRepository.findByEmail(email)</span>
-<span class="nc" id="L67">                .filter(Usuario::getActivo)</span>
-<span class="nc" id="L68">                .orElseThrow(() -&gt; new BadCredentialsException(&quot;Usuario no valido&quot;));</span>
+<span class="fc" id="L66">        Usuario usuario = usuarioRepository.findByEmail(email)</span>
+<span class="fc" id="L67">                .filter(Usuario::getActivo)</span>
+<span class="fc" id="L68">                .orElseThrow(() -&gt; new BadCredentialsException(&quot;Usuario no valido&quot;));</span>
 
-<span class="nc" id="L70">        tokenService.eliminarRefreshToken(request.refreshToken());</span>
+<span class="fc" id="L70">        tokenService.eliminarRefreshToken(request.refreshToken());</span>
 
-<span class="nc" id="L72">        return generarRespuestaAutenticacion(usuario);</span>
+<span class="fc" id="L72">        return generarRespuestaAutenticacion(usuario);</span>
     }
 
     public void logout(String accessToken, RefreshTokenRequest request) {
-<span class="nc" id="L76">        tokenService.agregarAccessTokenABlacklist(accessToken);</span>
-<span class="nc" id="L77">        tokenService.eliminarRefreshToken(request.refreshToken());</span>
-<span class="nc" id="L78">    }</span>
+<span class="fc" id="L76">        tokenService.agregarAccessTokenABlacklist(accessToken);</span>
+<span class="fc" id="L77">        tokenService.eliminarRefreshToken(request.refreshToken());</span>
+<span class="fc" id="L78">    }</span>
 
     private AuthResponse generarRespuestaAutenticacion(Usuario usuario) {
 <span class="fc" id="L81">        String accessToken = jwtService.generarToken(usuario);</span>
@@ -97,10 +97,10 @@ public class AuthService {
 
     private Rol convertirRol(String rol) {
         try {
-<span class="nc" id="L100">            return Rol.valueOf(rol.toUpperCase());</span>
-<span class="nc" id="L101">        } catch (IllegalArgumentException e) {</span>
-<span class="nc" id="L102">            throw new IllegalArgumentException(&quot;Rol no valido&quot;);</span>
+<span class="fc" id="L100">            return Rol.valueOf(rol.toUpperCase());</span>
+<span class="fc" id="L101">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L102">            throw new IllegalArgumentException(&quot;Rol no valido&quot;);</span>
         }
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -459,18 +459,20 @@ en la escala de Sauro y Lewis. La matriz de datos crudos se encuentra en
 
 \subsection{Cobertura de pruebas (Bloque C.4)}
 
-La cobertura de código se midió con \textbf{JaCoCo} \cite{jacoco} sobre los paquetes del
-dominio y de servicios de la API. El reporte agregado se muestra en la
-Figura~\ref{fig:imagen9} y la estructura de archivos generados en el repositorio, en la
+La cobertura de código se midió con \textbf{JaCoCo} \cite{jacoco} sobre las 50 clases de los
+paquetes del dominio, DTOs, servicios, seguridad, controladores y configuración de la API,
+mediante 150 pruebas unitarias de JUnit 5 (0 fallos, 0 errores). El reporte agregado se muestra
+en la Figura~\ref{fig:imagen9} y la estructura de archivos generados en el repositorio, en la
 Figura~\ref{fig:imagen10}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{imagen9}
-    \caption{Reporte JaCoCo por paquete: cobertura de instrucciones del 40\,\% global (902 de
-    1514 instrucciones cubiertas) y cobertura de ramas del 15\,\% (44 de 52), con el paquete
-    \texttt{ec.edu.uteq.sgroas.config} y \texttt{ec.edu.uteq.sgroas.entity} al 100\,\% de
-    cobertura de instrucciones.}
+    \caption{Reporte JaCoCo por paquete: cobertura de instrucciones del 98{,}8\,\% global (3484 de
+    3527 instrucciones cubiertas), cobertura de ramas del 85{,}4\,\% (70 de 82) y cobertura de
+    líneas del 99{,}7\,\% (778 de 780). Los paquetes \texttt{controller}, \texttt{dto},
+    \texttt{entity}, \texttt{config} y \texttt{exception} alcanzan el 100\,\% de cobertura de
+    instrucciones.}
     \label{fig:imagen9}
 \end{figure}
 
@@ -484,10 +486,11 @@ Figura~\ref{fig:imagen10}.
     \label{fig:imagen10}
 \end{figure}
 
-\noindent\textit{Nota:} la cobertura global reportada (40\,\% de instrucciones) se encuentra
-por debajo del umbral mínimo de 60\,\% exigido para la Tercera Entrega por el criterio C4 de la
-guía \cite{uteq2026guia}. Esta brecha se documenta como observación abierta a resolver antes de
-la Entrega Final.
+\noindent El plugin JaCoCo está configurado con una regla \texttt{check} que impone un mínimo de
+60\,\% de cobertura tanto de líneas como de ramas (\texttt{BUNDLE}); la corrida de verificación
+completa (150 tests) supera dicho umbral y el mensaje \texttt{All coverage checks have been met}
+se obtiene en cada \texttt{mvn verify}, por lo que el criterio C4 de la guía \cite{uteq2026guia}
+se cumple.
 
 \subsection{Accesibilidad y calidad web (Bloque C.5)}
 
@@ -507,9 +510,10 @@ archivan en \texttt{docs/mediciones/lighthouse/lhci-*.json}.
     local de desarrollo; la guía exige un mínimo de tres corridas independientes con cálculo
     de media, desviación típica e intervalo de confianza al 95\,\% \cite{uteq2026guia}, lo cual
     queda pendiente de completar.
-    \item \textbf{Validez de constructo:} la cobertura de JaCoCo (40\,\%) refleja el estado
-    parcial de las pruebas unitarias e de integración al momento de esta entrega,
-    concentradas principalmente en los paquetes \texttt{config} y \texttt{entity}.
+    \item \textbf{Validez de constructo:} la cobertura de JaCoCo (98{,}8\,\% de instrucciones,
+    85{,}4\,\% de ramas y 99{,}7\,\% de líneas, con 150 pruebas JUnit 5) refleja el estado
+    completo de las pruebas unitarias e de integración sobre los paquetes del dominio, servicios,
+    seguridad, controladores y DTOs.
     \item \textbf{Validez externa:} las pruebas de seguridad (Figuras~\ref{fig:imagen3}
     a~\ref{fig:imagen6}) cubren únicamente el flujo de autenticación; los seis controles OWASP
     mínimos del Bloque C.2 \cite{owasp2021,uteq2026guia} no se evidencian en su totalidad en
