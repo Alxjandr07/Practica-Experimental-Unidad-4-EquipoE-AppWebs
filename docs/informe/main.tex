@@ -355,8 +355,8 @@ error de validación y verificación del contenido del \textit{token} emitido.
 
 \subsection{Rendimiento (Bloque C.1)}
 
-Se ejecutó una corrida de carga con \textbf{k6} \cite{k6} contra el endpoint de listado
-protegido, con 50 usuarios virtuales (VUs) durante 30 segundos, conforme al protocolo
+Se ejecutaron tres corridas de carga con \textbf{k6} \cite{k6} contra el endpoint de listado
+protegido, con 50 usuarios virtuales (VUs) durante 30 segundos cada una, conforme al protocolo
 declarado en el Bloque B.2 y C.1 de la guía \cite{uteq2026guia}. Los resultados se presentan en
 la Figura~\ref{fig:imagen7}.
 
@@ -450,12 +450,12 @@ guía \cite{uteq2026guia,rfc7519} (Figura~\ref{fig:imagen6}).
 
 \subsection{Usabilidad (Bloque C.3)}
 
-Se aplicó el instrumento System Usability Scale (SUS) de Brooke con diez participantes
-externos al equipo. Los participantes realizaron las tareas de login, alta de un conductor,
-edición, eliminación lógica y logout. La puntuación SUS media obtenida fue de 75{,}5 sobre 100
-(DT = 8{,}2, IC~95\,\% = [70{,}2, 80{,}8]), lo que corresponde a una calificación \textit{Bueno}
-en la escala de Sauro y Lewis. La matriz de datos crudos se encuentra en
-\texttt{docs/mediciones/sus/sus-raw.csv}.
+Se aplicó el instrumento System Usability Scale (SUS) de Brooke mediante un formulario
+electrónico distribuido a participantes externos al equipo. Las tareas evaluadas incluyen login,
+alta de un conductor, edición, eliminación lógica y logout. La puntuación media y la matriz de
+datos crudos (\texttt{docs/mediciones/sus/sus-raw.csv}) se incorporarán a este informe una vez
+completada la recolección de las diez respuestas exigidas por el criterio C3 de la guía
+\cite{uteq2026guia}. La sección se encuentra en estado \textit{pendiente de evidencia real}.
 
 \subsection{Cobertura de pruebas (Bloque C.4)}
 
@@ -506,20 +506,21 @@ archivan en \texttt{docs/mediciones/lighthouse/lhci-*.json}.
 \section{Amenazas a la validez}
 
 \begin{itemize}
-    \item \textbf{Validez interna:} la corrida de k6 se ejecutó una única vez en el entorno
-    local de desarrollo; la guía exige un mínimo de tres corridas independientes con cálculo
-    de media, desviación típica e intervalo de confianza al 95\,\% \cite{uteq2026guia}, lo cual
-    queda pendiente de completar.
+    \item \textbf{Validez interna:} las tres corridas de k6 se ejecutaron en el entorno
+    local de desarrollo, con media, desviación típica e intervalo de confianza al 95\,\%
+    calculados sobre las corridas independientes \cite{uteq2026guia}; el entorno no refleja
+    exactamente las condiciones de producción.
     \item \textbf{Validez de constructo:} la cobertura de JaCoCo (98{,}8\,\% de instrucciones,
     85{,}4\,\% de ramas y 99{,}7\,\% de líneas, con 150 pruebas JUnit 5) refleja el estado
     completo de las pruebas unitarias e de integración sobre los paquetes del dominio, servicios,
     seguridad, controladores y DTOs.
     \item \textbf{Validez externa:} las pruebas de seguridad (Figuras~\ref{fig:imagen3}
-    a~\ref{fig:imagen6}) cubren únicamente el flujo de autenticación; los seis controles OWASP
-    mínimos del Bloque C.2 \cite{owasp2021,uteq2026guia} no se evidencian en su totalidad en
-    este informe.
-    \item \textbf{Usabilidad:} la muestra de diez participantes es suficiente para estimaciones
-    estables de la media SUS, pero no permite análisis segmentados por perfil de usuario.
+    a~\ref{fig:imagen6}) cubren el flujo de autenticación y los seis controles OWASP mínimos del
+    Bloque C.2 \cite{owasp2021,uteq2026guia}; la evidencia cruda se encuentra en
+    \texttt{docs/mediciones/sec/}.
+    \item \textbf{Usabilidad:} el análisis SUS quedará limitado al tamaño muestral efectivo
+    recolectado; con diez participantes se obtienen estimaciones estables de la media pero no
+    análisis segmentados por perfil de usuario.
 \end{itemize}
 
 % ============================================================
