@@ -2,8 +2,12 @@
 -- SGROAS — Schema de Base de Datos
 -- =============================================================================
 -- Gestionado via Flyway. Este archivo refleja el estado consolidado del esquema.
--- Las migraciones incrementales están en resources/db/migration/.
+-- Las migraciones incrementales estan en resources/db/migration/.
 -- =============================================================================
 
 -- Las migraciones son gestionadas por Flyway en src/main/resources/db/migration/
--- Ver V1__schema_inicial.sql para la definición actual de tablas.
+-- Ver:
+--   V1__schema_inicial.sql          - Tablas: usuarios, conductores
+--   V2__seed.sql                    - Datos semilla iniciales
+--   V3__nuevas_tablas.sql           - Tablas: vehiculos, rutas, asignacion_rutas, incidentes
+--   V4__seed_nuevas_tablas.sql      - Datos semilla para nuevas tablas

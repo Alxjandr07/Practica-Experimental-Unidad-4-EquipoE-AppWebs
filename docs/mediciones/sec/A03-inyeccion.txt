@@ -1,0 +1,11 @@
+﻿# A03 - Inyeccion
+# Fecha: 2026-07-30 00:08:57
+
+## A03-01: Payload inyeccion en login -> 422 ProblemDetails
+Payload: {"email":"' OR 1=1 --","password":"cualquier"}
+Respuesta:
+{"type":"https://sgroas.uteq.edu.ec/errors/validation","title":"Error de validacion","status":422,"detail":"Existen campos invalidos en la solicitud","instance":"/api/auth/login","errors":{"email":"El email debe tener un formato valido"}} HTTP_CODE:422
+
+## A03-02: Campos vacios -> 422 ProblemDetails (validacion)
+La validacion @Valid rechaza payloads malformados antes de llegar a la BD.
+No se concatena entrada de usuario en JPQL/HQL/SQL (verificacion de codigo).

@@ -4,12 +4,14 @@ import ec.edu.uteq.sgroas.dto.AuthResponse;
 import ec.edu.uteq.sgroas.dto.LoginRequest;
 import ec.edu.uteq.sgroas.dto.RefreshTokenRequest;
 import ec.edu.uteq.sgroas.dto.RegisterRequest;
+import ec.edu.uteq.sgroas.security.LoginRateLimiter;
 import ec.edu.uteq.sgroas.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.time.Duration;
 public class AuthController {
 
     private final AuthService authService;
+    private final LoginRateLimiter loginRateLimiter;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> registrar(
@@ -33,13 +36,27 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody LoginRequest request
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest
     ) {
-        AuthResponse response = authService.login(request);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, crearCookieAccessToken(response.accessToken()))
-                .body(response);
+        String ip = httpRequest.getRemoteAddr();
+        if (loginRateLimiter.estaBloqueado(ip)) {
+            ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.TOO_MANY_REQUESTS);
+            detail.setTitle("Demasiadas solicitudes");
+            detail.setDetail("Has superado el limite de intentos de inicio de sesion. Espera 60 segundos.");
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(detail);
+        }
+        try {
+            AuthResponse response = authService.login(request);
+            loginRateLimiter.resetear(ip);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, crearCookieAccessToken(response.accessToken()))
+                    .body(response);
+        } catch (Exception e) {
+            loginRateLimiter.registrarIntentoFallido(ip);
+            throw e;
+        }
     }
 
     @PostMapping("/refresh")

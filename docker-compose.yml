@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:18@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a
     container_name: sgroas-postgres
     environment:
       POSTGRES_DB: sgroas_db
@@ -9,14 +9,14 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - sgroas_postgres_data:/var/lib/postgresql/data
+      - sgroas_postgres_data:/var/lib/postgresql
     networks:
       sgroas-network:
         aliases:
           - postgres
 
   redis:
-    image: redis:7
+    image: redis:7@sha256:595cc6f2bb3af6e03347b90deb6123c6aa2c81dea05ce08128de8a174b6ac67b
     container_name: sgroas-redis-compose
     networks:
       sgroas-network:
