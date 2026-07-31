@@ -1,0 +1,31 @@
+<div class="shell">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="dot"></span>
+      SGROAS
+    </div>
+
+    <div class="navbar-links">
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="'/dashboard/' + item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.path === '' }"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </div>
+
+    <div class="navbar-actions">
+      <button class="icon-btn" title="Notificaciones">🔔</button>
+      <button class="avatar" (click)="logout()" title="Cerrar sesión">
+        {{ initials || 'AD' }}
+      </button>
+    </div>
+  </nav>
+
+  <main class="shell-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

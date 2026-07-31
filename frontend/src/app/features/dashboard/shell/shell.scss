@@ -1,0 +1,86 @@
+.shell {
+  min-height: 100vh;
+  background: var(--color-cream);
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  background: var(--color-dark);
+  padding: 0 2rem;
+  height: 68px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    background: var(--color-accent);
+  }
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.75rem;
+  flex: 1;
+
+  a {
+    color: #b0b3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 1.4rem 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+
+    &.active {
+      color: white;
+      border-bottom-color: var(--color-accent);
+    }
+
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--color-teal);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+}
+
+.shell-content {
+  padding: 2.5rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}

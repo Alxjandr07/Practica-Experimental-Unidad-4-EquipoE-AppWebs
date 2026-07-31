@@ -1,0 +1,30 @@
+<div class="overview">
+  <div class="overview-header">
+    <div>
+      <span class="tag">PANEL PRINCIPAL · HOY</span>
+      <h1>Resumen general</h1>
+    </div>
+    <button class="btn-primary">+ Nuevo registro</button>
+  </div>
+
+  <div class="summary-grid">
+    @for (card of summary; track card.label) {
+      <div class="summary-card">
+        <span class="label">{{ card.label }}</span>
+        <strong class="value">{{ card.value }}</strong>
+        <span class="trend">{{ card.trend }}</span>
+      </div>
+    }
+  </div>
+
+  <h2>Módulos del sistema</h2>
+  <div class="modules-grid">
+    @for (mod of modules; track mod.path) {
+      <a class="module-card" [routerLink]="mod.path">
+        <div class="icon">{{ mod.icon }}</div>
+        <h3>{{ mod.title }}</h3>
+        <p>{{ mod.description }}</p>
+      </a>
+    }
+  </div>
+</div>

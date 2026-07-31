@@ -1,21 +1,21 @@
-ID Requisito,Nombre,Categoria,Entidad Asociada,Endpoint API,SP Asociado,Archivos Fuente,Estado
-REQ-001,Autenticacion JWT,Seguridad,Usuario,POST /api/auth/login,—,AuthController.java AuthService.java JwtService.java,Implementado
-REQ-002,Registro de Usuarios,Seguridad,Usuario,POST /api/auth/register,—,AuthController.java AuthService.java,Implementado
-REQ-003,Refresh Token,Seguridad,Usuario,POST /api/auth/refresh,—,AuthController.java TokenService.java,Implementado
-REQ-004,Logout,Seguridad,Usuario,POST /api/auth/logout,—,AuthController.java TokenService.java,Implementado
-REQ-005,CRUD Conductores,Gestion,Conductor,GET/POST/PUT/DELETE /api/conductores,fn_licencias_por_vencer,ConductorController.java ConductorService.java ConductorRepository.java,Implementado
-REQ-006,CRUD Vehiculos,Gestion,Vehiculo,GET/POST/PUT/DELETE /api/vehiculos,sp_vehiculos_en_mantenimiento,VehiculoController.java VehiculoService.java VehiculoRepository.java,Implementado
-REQ-007,CRUD Rutas,Gestion,Ruta,GET/POST/PUT/DELETE /api/rutas,sp_reporte_rendimiento_rutas,RutaController.java RutaService.java RutaRepository.java,Implementado
-REQ-008,CRUD Asignaciones,Gestion,AsignacionRuta,GET/POST/PUT/DELETE /api/asignaciones,sp_asignaciones_activas_por_conductor,AsignacionRutaController.java AsignacionRutaService.java AsignacionRutaRepository.java,Implementado
-REQ-009,CRUD Incidentes,Seguridad,Incidente,GET/POST/PUT/DELETE /api/incidentes,sp_obtener_incidentes_por_rango sp_incidentes_por_gravedad,IncidenteController.java IncidenteService.java IncidenteRepository.java,Implementado
-REQ-010,Reporte Incidentes por Rango,Reportes,Incidente,—,sp_obtener_incidentes_por_rango,db/procs/sp_obtener_incidentes_por_rango.sql,Implementado
-REQ-011,Incidentes por Gravedad,Reportes,Incidente,—,sp_incidentes_por_gravedad,db/procs/sp_incidentes_por_gravedad.sql,Implementado
-REQ-012,Asignaciones por Conductor,Reportes,AsignacionRuta,—,sp_asignaciones_activas_por_conductor,db/procs/sp_asignaciones_activas_por_conductor.sql,Implementado
-REQ-013,Vehiculos en Mantenimiento,Reportes,Vehiculo,—,sp_vehiculos_en_mantenimiento,db/procs/sp_vehiculos_en_mantenimiento.sql,Implementado
-REQ-014,Rendimiento de Rutas,Reportes,Ruta,—,sp_reporte_rendimiento_rutas,db/procs/sp_reporte_rendimiento_rutas.sql,Implementado
-REQ-015,Alertas Licencias,Reportes,Conductor,—,fn_licencias_por_vencer,db/procs/fn_licencias_por_vencer.sql,Implementado
-REQ-016,Dashboard Estadisticas,Reportes,Todas,—,fn_estadisticas_generales,db/procs/fn_estadisticas_generales.sql,Implementado
-REQ-017,Cache Redis,Rendimiento,Todas,—,—,RedisConfig.java CacheConfig.java,Implementado
-REQ-018,Documentacion API,Calidad,—,GET /api/docs/swagger-ui.html,—,OpenApiConfig.java,Implementado
-REQ-019,Licencias por Vencer,Reportes,Conductor,—,fn_licencias_por_vencer,db/procs/fn_licencias_por_vencer.sql,Implementado
-REQ-020,Base de Datos Versionada,Infraestructura,Todas,—,—,V1__ V2__ V3__ V4__,Implementado
+id_requisito,tipo,prioridad_moscow,historia_usuario,caso_de_uso,modulo_codigo,endpoint_api,prueba_automatizada,tipo_acceso,evidencia_empirica,estado
+REQ-F-001,Funcional,Must,HU-001,CU-001,AuthController,POST /api/auth/login,AuthServiceTest,CRUD-ORM,docs/mediciones/sec/A01-acceso.txt,verificado
+REQ-F-002,Funcional,Must,HU-001,,AuthController,POST /api/auth/register,AuthServiceTest,CRUD-ORM,,implementado
+REQ-F-003,Funcional,Must,HU-001,,AuthController,POST /api/auth/refresh,AuthServiceTest,CRUD-ORM,,implementado
+REQ-F-004,Funcional,Must,HU-001,,AuthController,POST /api/auth/logout,AuthServiceTest,CRUD-ORM,,implementado
+REQ-F-005,Funcional,Must,HU-002,CU-002,ConductorController,GET /api/conductores,ConductorServiceTest,CRUD-ORM,docs/mediciones/perf/,verificado
+REQ-F-006,Funcional,Must,HU-002,CU-002,ConductorController,GET /api/conductores/{id},ConductorServiceTest,CRUD-ORM,,verificado
+REQ-F-007,Funcional,Must,HU-002,CU-002,ConductorController,POST /api/conductores,ConductorServiceTest,CRUD-ORM,,verificado
+REQ-F-008,Funcional,Must,HU-002,CU-002,ConductorController,PUT /api/conductores/{id},ConductorServiceTest,CRUD-ORM,,verificado
+REQ-F-009,Funcional,Must,HU-002,CU-002,ConductorController,DELETE /api/conductores/{id},ConductorServiceTest,CRUD-ORM,,verificado
+REQ-F-010,Funcional,Must,HU-003,CU-003,UsuarioController,GET /api/usuarios,,CRUD-ORM,,implementado
+REQ-F-011,Funcional,Must,HU-003,CU-003,UsuarioController,GET /api/usuarios/{id},,CRUD-ORM,,implementado
+REQ-F-012,Funcional,Must,HU-003,CU-003,UsuarioController,POST /api/usuarios,,CRUD-ORM,,implementado
+REQ-F-013,Funcional,Must,HU-003,CU-003,UsuarioController,PUT /api/usuarios/{id},,CRUD-ORM,,implementado
+REQ-F-014,Funcional,Must,HU-003,CU-003,UsuarioController,DELETE /api/usuarios/{id},,CRUD-ORM,,implementado
+REQ-NF-001,No funcional,Must,,,SecurityConfig,,,CRUD-ORM,docs/mediciones/sec/A05-headers.txt,verificado
+REQ-NF-002,No funcional,Must,,,SecurityConfig,,,CRUD-ORM,docs/mediciones/sec/A02-criptografia.txt,verificado
+REQ-NF-003,No funcional,Must,,,ConductorController,GET /api/conductores,ConductorServiceTest,CRUD-ORM,docs/mediciones/perf/k01-run1.json,verificado
+REQ-NF-004,No funcional,Must,,,GlobalExceptionHandler,,,CRUD-ORM,docs/mediciones/sec/A03-inyeccion.txt,verificado
+REQ-NF-005,No funcional,Must,,,AuthController,POST /api/auth/login,,CRUD-ORM,docs/mediciones/sec/A07-rate-limit.txt,verificado
+REQ-NF-006,No funcional,Should,,,Backend,,,CRUD-ORM,docs/mediciones/jacoco/jacoco.xml,verificado

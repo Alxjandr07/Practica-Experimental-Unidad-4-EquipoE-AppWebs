@@ -1,0 +1,23 @@
+:root {
+  --color-dark: #1a1a1a;
+  --color-dark-soft: #242424;
+  --color-cream: #f4f1ec;
+  --color-accent: #f5a623;
+  --color-teal: #14453f;
+  --color-teal-hover: #0e332e;
+  --color-text-muted: #6b7280;
+  --color-border: #d9d5cc;
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  color: var(--color-dark);
+}/* You can add global styles to this file, and also import other style files */

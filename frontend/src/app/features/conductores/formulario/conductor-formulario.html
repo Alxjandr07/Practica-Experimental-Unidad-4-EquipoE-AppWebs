@@ -1,0 +1,97 @@
+<div class="page-header">
+  <h1>{{ editId() ? 'Editar conductor' : 'Nuevo conductor' }}</h1>
+  <a class="btn-outline" routerLink="/dashboard/flota">Volver</a>
+</div>
+
+@if (errorMsg()) {
+  <div class="alert-error">{{ errorMsg() }}</div>
+}
+
+@if (loadingData()) {
+  <p class="loading-text">Cargando datos...</p>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-card">
+    <div class="form-grid">
+      <div class="field">
+        <label for="nombres">Nombres</label>
+        <input id="nombres" formControlName="nombres" placeholder="Nombres completos" />
+        @if (form.get('nombres')?.invalid && form.get('nombres')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="apellidos">Apellidos</label>
+        <input id="apellidos" formControlName="apellidos" placeholder="Apellidos completos" />
+        @if (form.get('apellidos')?.invalid && form.get('apellidos')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="cedula">Cedula</label>
+        <input id="cedula" formControlName="cedula" placeholder="10 digitos" maxlength="10" />
+        @if (form.get('cedula')?.invalid && form.get('cedula')?.touched) {
+          <span class="field-error">Debe tener 10 digitos.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="telefono">Telefono</label>
+        <input id="telefono" formControlName="telefono" placeholder="Opcional" />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="conductor@cooperativa.ec" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="field-error">Email invalido.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="tipoLicencia">Tipo de licencia</label>
+        <select id="tipoLicencia" formControlName="tipoLicencia">
+          <option value="">Seleccione...</option>
+          @for (t of tiposLicencia; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+        @if (form.get('tipoLicencia')?.invalid && form.get('tipoLicencia')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="numeroLicencia">Numero de licencia</label>
+        <input id="numeroLicencia" formControlName="numeroLicencia" placeholder="Ej: 1234567890" />
+        @if (form.get('numeroLicencia')?.invalid && form.get('numeroLicencia')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="fechaVencimientoLicencia">Vencimiento de licencia</label>
+        <input id="fechaVencimientoLicencia" type="date" formControlName="fechaVencimientoLicencia" />
+        @if (form.get('fechaVencimientoLicencia')?.invalid && form.get('fechaVencimientoLicencia')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="estado">Estado</label>
+        <select id="estado" formControlName="estado">
+          @for (e of estados; track e) {
+            <option [value]="e">{{ e }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        {{ loading() ? 'Guardando...' : (editId() ? 'Actualizar' : 'Crear conductor') }}
+      </button>
+    </div>
+  </form>
+}

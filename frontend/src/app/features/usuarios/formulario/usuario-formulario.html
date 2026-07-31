@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1>{{ editId() ? 'Editar usuario' : 'Nuevo usuario' }}</h1>
+  <a class="btn-outline" routerLink="/dashboard/usuarios">Volver</a>
+</div>
+
+@if (errorMsg()) {
+  <div class="alert-error">{{ errorMsg() }}</div>
+}
+
+@if (loadingData()) {
+  <p class="loading-text">Cargando datos...</p>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-card">
+    <div class="form-grid">
+      <div class="field">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" formControlName="nombre" placeholder="Nombre del usuario" />
+        @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="email">Correo electronico</label>
+        <input id="email" type="email" formControlName="email" placeholder="usuario@cooperativa.ec" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="field-error">Ingresa un email valido.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">{{ editId() ? 'Nueva contrasena (dejar vacio para mantener)' : 'Contrasena' }}</label>
+        <input id="password" type="password" formControlName="password" placeholder="Minimo 6 caracteres" />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <span class="field-error">Minimo 6 caracteres.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="rol">Rol</label>
+        <select id="rol" formControlName="rol">
+          @for (r of roles; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+        @if (form.get('rol')?.invalid && form.get('rol')?.touched) {
+          <span class="field-error">Campo obligatorio.</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        {{ loading() ? 'Guardando...' : (editId() ? 'Actualizar' : 'Crear usuario') }}
+      </button>
+    </div>
+  </form>
+}

@@ -18,6 +18,8 @@ services:
   redis:
     image: redis:7@sha256:595cc6f2bb3af6e03347b90deb6123c6aa2c81dea05ce08128de8a174b6ac67b
     container_name: sgroas-redis-compose
+    ports:
+      - "6379:6379"
     networks:
       sgroas-network:
         aliases:

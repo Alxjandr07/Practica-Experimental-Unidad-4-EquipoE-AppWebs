@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">ec.edu.uteq.sgroas.service</a> &gt; <span class="el_source">UsuarioService.java</span></div><h1>UsuarioService.java</h1><pre class="source lang-java linenums">package ec.edu.uteq.sgroas.service;
+
+import ec.edu.uteq.sgroas.dto.UsuarioRequest;
+import ec.edu.uteq.sgroas.dto.UsuarioResponse;
+import ec.edu.uteq.sgroas.entity.Rol;
+import ec.edu.uteq.sgroas.entity.Usuario;
+import ec.edu.uteq.sgroas.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+
+@Service
+@RequiredArgsConstructor
+public class UsuarioService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public Page&lt;UsuarioResponse&gt; listar(Pageable pageable) {
+<span class="fc" id="L25">        return usuarioRepository.findByActivoTrue(pageable)</span>
+<span class="fc" id="L26">                .map(this::toResponse);</span>
+    }
+
+    public UsuarioResponse buscarPorId(Long id) {
+<span class="fc" id="L30">        return usuarioRepository.findById(id)</span>
+<span class="fc" id="L31">                .map(this::toResponse)</span>
+<span class="fc" id="L32">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Usuario no encontrado con id: &quot; + id));</span>
+    }
+
+    public UsuarioResponse crear(UsuarioRequest request) {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (usuarioRepository.existsByEmail(request.email())) {</span>
+<span class="fc" id="L37">            throw new IllegalArgumentException(&quot;Ya existe un usuario con ese email&quot;);</span>
+        }
+
+<span class="fc" id="L40">        Usuario usuario = Usuario.builder()</span>
+<span class="fc" id="L41">                .nombre(request.nombre())</span>
+<span class="fc" id="L42">                .email(request.email())</span>
+<span class="fc" id="L43">                .passwordHash(passwordEncoder.encode(request.password()))</span>
+<span class="fc" id="L44">                .rol(Rol.valueOf(request.rol().toUpperCase()))</span>
+<span class="fc" id="L45">                .activo(true)</span>
+<span class="fc" id="L46">                .creadoEn(Instant.now())</span>
+<span class="fc" id="L47">                .actualizadoEn(Instant.now())</span>
+<span class="fc" id="L48">                .build();</span>
+
+<span class="fc" id="L50">        return toResponse(usuarioRepository.save(usuario));</span>
+    }
+
+    public UsuarioResponse actualizar(Long id, UsuarioRequest request) {
+<span class="fc" id="L54">        Usuario usuario = usuarioRepository.findById(id)</span>
+<span class="fc" id="L55">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Usuario no encontrado con id: &quot; + id));</span>
+
+<span class="fc" id="L57">        usuario.setNombre(request.nombre());</span>
+<span class="fc" id="L58">        usuario.setEmail(request.email());</span>
+<span class="fc" id="L59">        usuario.setRol(Rol.valueOf(request.rol().toUpperCase()));</span>
+<span class="fc" id="L60">        usuario.setActualizadoEn(Instant.now());</span>
+
+<span class="pc bpc" id="L62" title="2 of 4 branches missed.">        if (request.password() != null &amp;&amp; !request.password().isBlank()) {</span>
+<span class="fc" id="L63">            usuario.setPasswordHash(passwordEncoder.encode(request.password()));</span>
+        }
+
+<span class="fc" id="L66">        return toResponse(usuarioRepository.save(usuario));</span>
+    }
+
+    public void desactivar(Long id) {
+<span class="fc" id="L70">        Usuario usuario = usuarioRepository.findById(id)</span>
+<span class="fc" id="L71">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Usuario no encontrado con id: &quot; + id));</span>
+<span class="fc" id="L72">        usuario.setActivo(false);</span>
+<span class="fc" id="L73">        usuario.setActualizadoEn(Instant.now());</span>
+<span class="fc" id="L74">        usuarioRepository.save(usuario);</span>
+<span class="fc" id="L75">    }</span>
+
+    private UsuarioResponse toResponse(Usuario u) {
+<span class="fc" id="L78">        return new UsuarioResponse(</span>
+<span class="fc" id="L79">                u.getId(), u.getNombre(), u.getEmail(),</span>
+<span class="fc" id="L80">                u.getRol().name(), u.getActivo(),</span>
+<span class="fc" id="L81">                u.getCreadoEn(), u.getActualizadoEn()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

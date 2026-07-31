@@ -1,0 +1,119 @@
+package ec.edu.uteq.sgroas.service;
+
+import ec.edu.uteq.sgroas.security.JwtService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+
+import java.time.Duration;
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class TokenServiceTest {
+
+    @Mock
+    private StringRedisTemplate redisTemplate;
+
+    @Mock
+    private JwtService jwtService;
+
+    @Mock
+    private ValueOperations<String, String> valueOperations;
+
+    @InjectMocks
+    private TokenService tokenService;
+
+    @BeforeEach
+    void configurarValueOperations() {
+        lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+    }
+
+    @Test
+    void generarRefreshTokenDebeGuardarEnRedis() {
+        String refreshToken = tokenService.generarRefreshToken("admin@sgroas.com", 604800000L);
+
+        assertNotNull(refreshToken);
+        verify(valueOperations).set(
+                eq("refresh:" + refreshToken),
+                eq("admin@sgroas.com"),
+                eq(Duration.ofMillis(604800000L))
+        );
+    }
+
+    @Test
+    void obtenerEmailDebeRetornarEmail() {
+        when(valueOperations.get("refresh:token-valido")).thenReturn("admin@sgroas.com");
+
+        String email = tokenService.obtenerEmailDesdeRefreshToken("token-valido");
+
+        assertEquals("admin@sgroas.com", email);
+    }
+
+    @Test
+    void obtenerEmailConTokenInexistenteDebeLanzarExcepcion() {
+        when(valueOperations.get("refresh:token-inexistente")).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> tokenService.obtenerEmailDesdeRefreshToken("token-inexistente"));
+    }
+
+    @Test
+    void eliminarRefreshTokenDebeBorrarDeRedis() {
+        when(redisTemplate.delete("refresh:token-viejo")).thenReturn(true);
+
+        tokenService.eliminarRefreshToken("token-viejo");
+
+        verify(redisTemplate).delete("refresh:token-viejo");
+    }
+
+    @Test
+    void agregarAccessTokenABlacklistConExpiracionFutura() {
+        when(jwtService.extraerJti("access-token")).thenReturn("jti-123");
+        when(jwtService.extraerExpiracion("access-token"))
+                .thenReturn(new Date(System.currentTimeMillis() + 3600000L));
+
+        tokenService.agregarAccessTokenABlacklist("access-token");
+
+        verify(valueOperations).set(
+                eq("blacklist:jti-123"),
+                eq("logout"),
+                any(Duration.class)
+        );
+    }
+
+    @Test
+    void agregarAccessTokenABlacklistExpiradoNoDebeGuardar() {
+        when(jwtService.extraerJti("access-token")).thenReturn("jti-123");
+        when(jwtService.extraerExpiracion("access-token"))
+                .thenReturn(new Date(System.currentTimeMillis() - 1000L));
+
+        tokenService.agregarAccessTokenABlacklist("access-token");
+
+        verify(valueOperations, never()).set(any(String.class), any(String.class), any(Duration.class));
+    }
+
+    @Test
+    void accessTokenEnBlacklistDebeRetornarTrue() {
+        when(jwtService.extraerJti("access-token")).thenReturn("jti-123");
+        when(redisTemplate.hasKey("blacklist:jti-123")).thenReturn(true);
+
+        assertTrue(tokenService.accessTokenEnBlacklist("access-token"));
+    }
+
+    @Test
+    void accessTokenEnBlacklistDebeRetornarFalse() {
+        when(jwtService.extraerJti("access-token")).thenReturn("jti-123");
+        when(redisTemplate.hasKey("blacklist:jti-123")).thenReturn(false);
+
+        assertFalse(tokenService.accessTokenEnBlacklist("access-token"));
+    }
+}
