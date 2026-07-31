@@ -8,7 +8,7 @@
     <div class="navbar-links">
       @for (item of navItems; track item.path) {
         <a
-          [routerLink]="item.path"
+          [routerLink]="'/dashboard/' + item.path"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: item.path === '' }"
         >
