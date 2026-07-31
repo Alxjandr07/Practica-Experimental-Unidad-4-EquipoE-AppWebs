@@ -45,7 +45,13 @@ jobs:
           cache: maven
 
       - name: Make mvnw executable
-        run: chmod +x mvnw
+        run: chmod +x mvnw scripts/validate-traceability.sh scripts/audit-sql-dynamic.sh
+
+      - name: Validate traceability matrix
+        run: scripts/validate-traceability.sh
+
+      - name: Audit SQL dynamic construction
+        run: scripts/audit-sql-dynamic.sh
 
       - name: Install redis-cli
         run: sudo apt-get update -qq && sudo apt-get install -y -qq redis-tools

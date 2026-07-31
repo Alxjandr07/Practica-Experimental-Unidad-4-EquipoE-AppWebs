@@ -1,0 +1,389 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+\usepackage[backend=biber, style=ieee, doi=true, url=true]{biblatex}
+\addbibresource{SRS-references.bib}
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\title{Especificación de Requisitos de Software (SRS) \\ SGROAS — v0.9.0-rc}
+\author{Equipo CET \\ Universidad Técnica Estatal de Quevedo — Carrera de Ingeniería de Software}
+\date{24 de julio de 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section{Introducción}
+\label{sec:introduccion}
+
+\subsection{Propósito}
+\label{sec:proposito}
+
+El presente documento constituye la Especificación de Requisitos de Software (SRS) del
+sistema \textbf{SGROAS} (Sistema de Gestión de Recursos Operativos, Administrativos y de
+Seguridad), elaborada conforme a la especificación internacional \textbf{ISO/IEC/IEEE
+29148:2018} \cite{iso29148}. Define los requisitos funcionales y no funcionales del sistema
+en su estado candidato \texttt{v0.9.0-rc} (Tercera Entrega del Proyecto Fin de Curso, PFC),
+su prioridad según el método MoSCoW, sus criterios de aceptación medibles y su método de
+verificación.
+
+\subsection{Alcance}
+\label{sec:alcance}
+
+El sistema SGROAS gestiona los recursos operativos, administrativos y de seguridad de una
+institución de transporte. En el estado \texttt{v0.9.0-rc} el alcance comprende:
+autenticación stateless mediante JWT en \textit{cookie} HttpOnly, CRUD de conductores y de
+usuarios, caché Redis, procedimientos almacenados para reportes y agregaciones, y la
+consolidación funcional heredada de la Entrega 1B. Quedan fuera del alcance de esta entrega
+los módulos de facturación, pagos y la puesta en producción pública (prevista para la
+Entrega Final, \texttt{v1.0.0}).
+
+\subsection{Definiciones y abreviaturas}
+\label{sec:definiciones}
+
+\begin{description}
+  \item[SGROAS] Sistema de Gestión de Recursos Operativos, Administrativos y de Seguridad.
+  \item[JWT] JSON Web Token, estándar RFC 7519 de representación segura de afirmaciones.
+  \item[CRUD] Create, Read, Update, Delete (crear, leer, actualizar, eliminar).
+  \item[MoSCoW] Técnica de priorización: Must (obligatorio), Should (debería), Could (podría), Won't (no se hará).
+  \item[ORM] Mapeo objeto-relacional (Hibernate/Spring Data JPA).
+  \item[SP] \textit{Stored procedure} (procedimiento almacenado) o función SQL.
+  \item[RNF] Requisito no funcional.
+  \item[RF] Requisito funcional.
+  \item[TTL] \textit{Time to Live}, duración máxima de una entrada de caché.
+\end{description}
+
+\subsection{Referencias}
+\label{sec:referencias}
+
+\begin{itemize}
+  \item ISO/IEC/IEEE 29148:2018 — Ingeniería de requisitos \cite{iso29148}.
+  \item INCOSE Guide to Writing Requirements v4 \cite{incose}.
+  \item Cohn, M. \textit{User Stories Applied} (criterios INVEST) \cite{cohn2004}.
+  \item Cockburn, A. \textit{Writing Effective Use Cases} \cite{cockburn2001}.
+  \item RFC 7519 — JSON Web Token \cite{rfc7519}.
+  \item RFC 7807 — Problem Details for HTTP APIs \cite{rfc7807}.
+  \item OWASP Top 10:2021 \cite{owasp}.
+  \item Robertson y Robertson. \textit{Mastering the Requirements Process} (plantilla Volere) \cite{robertson2012}.
+  \item Pohl, K. \textit{Requirements Engineering} \cite{pohl2010}.
+  \item Wiegers y Beatty. \textit{Software Requirements} \cite{wiegers2013}.
+  \item ISO/IEC 25010:2011 — Calidad del producto software \cite{iso25010}.
+\end{itemize}
+
+\subsection{Resumen del documento}
+\label{sec:resumen}
+
+El documento se organiza en tres capítulos: la presente introducción, la descripción global
+del producto (perspectiva, funciones, usuarios, restricciones, supuestos) y el capítulo de
+requisitos específicos (funcionales, no funcionales y de interfaz externa). Cada requisito
+indica su identificador persistente, \textit{rationale}, prioridad MoSCoW, criterio de
+aceptación medible, método de verificación y trazabilidad hacia historia de usuario, caso de
+uso, módulo, endpoint y evidencia empírica, en correspondencia con
+\texttt{docs/trazabilidad/matriz.csv}.
+
+% ============================================================
+\section{Descripción global}
+\label{sec:descripcion}
+
+\subsection{Perspectiva del producto}
+\label{sec:perspectiva}
+
+SGROAS es una aplicación web de tres capas: frontend Angular 20, backend Spring Boot 3.2.x
+(Java 21 LTS) y PostgreSQL 16, con Redis 7 como caché distribuida y orquestación mediante
+Docker Compose. El backend expone una API REST documentada en OpenAPI 3.0 en \texttt{/api/docs}.
+La arquitectura se detalla en los diagramas C4 (niveles 1–3) en \texttt{docs/arquitectura/} y en
+las decisiones registradas en \texttt{docs/adr/}.
+
+\subsection{Funciones del producto}
+\label{sec:funciones}
+
+\begin{itemize}
+  \item Autenticación stateless con JWT en \textit{cookie} HttpOnly + Secure + SameSite=Strict.
+  \item CRUD de conductores (alta, consulta, edición, eliminación lógica).
+  \item CRUD de usuarios del sistema (alta, consulta, edición, eliminación lógica).
+  \item Caché Redis en el listado paginado de conductores con TTL configurable externamente.
+  \item Reportes y agregaciones mediante procedimientos almacenados y funciones SQL.
+  \item Manejo uniforme de errores con ProblemDetails (RFC 7807).
+\end{itemize}
+
+\subsection{Características de los usuarios}
+\label{sec:usuarios}
+
+\begin{longtable}{@{}p{3cm}p{3.5cm}p{8cm}@{}}
+\toprule
+\textbf{Rol} & \textbf{Permiso} & \textbf{Descripción} \\
+\midrule
+\endhead
+Administrador & Total & Gestiona usuarios, conductores y configuración del sistema. \\
+Coordinador & Operativo & Gestiona conductores, rutas, vehículos y asignaciones. \\
+Seguridad & Consulta & Consulta incidentes, reportes y estado de la flota. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Restricciones}
+\label{sec:restricciones}
+
+\begin{itemize}
+  \item El esquema de base de datos se aplica exclusivamente desde \texttt{db/schema.sql},
+  \texttt{db/seed.sql} y migraciones Flyway; queda prohibido \texttt{ddl-auto=update}.
+  \item Toda operación que no sea CRUD elemental se implementa como procedimiento almacenado
+  o función SQL (Bloque A.2.2 de la guía).
+  \item Queda prohibida la concatenación de entrada de usuario en cualquier consulta SQL, JPQL
+  o HQL, y el uso de SQL dinámico en procedimientos.
+  \item Las imágenes de contenedor se fijan por \textit{digest} sha256.
+\end{itemize}
+
+\subsection{Supuestos y dependencias}
+\label{sec:supuestos}
+
+\begin{itemize}
+  \item Se dispone de Docker Desktop para la orquestación y de Java 21 para la compilación.
+  \item Las credenciales semilla (\texttt{admin@sgroas.com} / \texttt{admin123}) se documentan
+  en el README y en \texttt{db/seed.sql}.
+  \item La ejecución de las mediciones (k6, Lighthouse, JaCoCo) requiere el sistema levantado
+  según el Makefile.
+\end{itemize}
+
+% ============================================================
+\section{Requisitos específicos}
+\label{sec:requisitos}
+
+\subsection{Convenciones}
+\label{sec:convenciones}
+
+Cada requisito declara: \textbf{ID} (identificador persistente), \textbf{Tipo} (funcional /
+no funcional), \textbf{Prioridad} (MoSCoW), \textbf{Rationale} (justificación y origen),
+\textbf{Criterio de aceptación} (medible), \textbf{Método de verificación}
+(\textit{inspection}, \textit{analysis}, \textit{demonstration}, \textit{test}) y
+\textbf{Trazabilidad} (historia, caso de uso, módulo, endpoint, prueba, evidencia). Los
+identificadores coinciden con la matriz \texttt{docs/trazabilidad/matriz.csv}.
+
+\subsection{Requisitos funcionales}
+\label{sec:rf}
+
+\subsubsection{REQ-F-001 — Inicio de sesión}
+\begin{itemize}
+  \item \textbf{Tipo:} Funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} El acceso al sistema requiere autenticación previa (origen:
+  entrevistas con el personal de transporte).
+  \item \textbf{Enunciado:} El sistema deberá autenticar al usuario mediante
+  \texttt{POST /api/auth/login} y, tras validar credenciales, emitir un JWT firmado y
+  establecer una \textit{cookie} HttpOnly + Secure + SameSite=Strict (RFC 7519).
+  \item \textbf{Criterio de aceptación:} Con credenciales válidas responde \texttt{200 OK} y
+  \textit{cookie} con el JWT; con credenciales inválidas responde \texttt{401 Unauthorized}
+  con ProblemDetails.
+  \item \textbf{Método de verificación:} \textit{test} (AuthServiceTest) y
+  \textit{demonstration} (Postman).
+  \item \textbf{Trazabilidad:} HU-001, CU-001, \texttt{AuthController},
+  \texttt{POST /api/auth/login}, evidencia \texttt{docs/mediciones/sec/}.
+\end{itemize}
+
+\subsubsection{REQ-F-002 — Registro de usuario}
+\begin{itemize}
+  \item \textbf{Tipo:} Funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} El administrador debe poder crear cuentas de acceso.
+  \item \textbf{Enunciado:} El sistema deberá permitir registrar un usuario mediante
+  \texttt{POST /api/auth/register} validando unicidad de correo.
+  \item \textbf{Criterio de aceptación:} Registro exitoso responde \texttt{201 Created};
+  correo duplicado responde \texttt{409 Conflict}.
+  \item \textbf{Método de verificación:} \textit{test} (AuthServiceTest).
+  \item \textbf{Trazabilidad:} HU-001, \texttt{AuthController}, \texttt{POST /api/auth/register}.
+\end{itemize}
+
+\subsubsection{REQ-F-003 — Renovación de token}
+\begin{itemize}
+  \item \textbf{Tipo:} Funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} Evitar reautenticación frecuente manteniendo la seguridad.
+  \item \textbf{Enunciado:} El sistema deberá renovar el JWT mediante
+  \texttt{POST /api/auth/refresh} verificando el \textit{refresh token}.
+  \item \textbf{Criterio de aceptación:} \textit{Refresh token} válido responde \texttt{200 OK}
+  con nuevo JWT; inválido o revocado responde \texttt{401}.
+  \item \textbf{Método de verificación:} \textit{test} (AuthServiceTest).
+  \item \textbf{Trazabilidad:} HU-001, \texttt{AuthController}, \texttt{POST /api/auth/refresh}.
+\end{itemize}
+
+\subsubsection{REQ-F-004 — Cierre de sesión}
+\begin{itemize}
+  \item \textbf{Tipo:} Funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} Permitir revocar la sesión activa.
+  \item \textbf{Enunciado:} El sistema deberá revocar el token (JTI en lista negra Redis)
+  mediante \texttt{POST /api/auth/logout}.
+  \item \textbf{Criterio de aceptación:} Responde \texttt{204 No Content} y el token queda
+  revocado en Redis.
+  \item \textbf{Método de verificación:} \textit{test} (AuthServiceTest).
+  \item \textbf{Trazabilidad:} HU-001, \texttt{AuthController}, \texttt{POST /api/auth/logout}.
+\end{itemize}
+
+\subsubsection{REQ-F-005 a REQ-F-009 — CRUD de conductores}
+\begin{itemize}
+  \item \textbf{Tipo:} Funcional. \textbf{Prioridad:} Must (cada uno).
+  \item \textbf{Rationale:} La gestión de la flota requiere el mantenimiento de conductores
+  (origen: REQ-005 de la Entrega 1A).
+  \item \textbf{Enunciados:}
+    \begin{description}
+      \item[REQ-F-005] Listado paginado y filtrable: \texttt{GET /api/conductores}.
+      \item[REQ-F-006] Consulta por id: \texttt{GET /api/conductores/\{id\}}.
+      \item[REQ-F-007] Alta: \texttt{POST /api/conductores}.
+      \item[REQ-F-008] Actualización: \texttt{PUT /api/conductores/\{id\}}.
+      \item[REQ-F-009] Eliminación lógica: \texttt{DELETE /api/conductores/\{id\}}.
+    \end{description}
+  \item \textbf{Criterio de aceptación:} Cada operación responde según REST (\texttt{200},
+  \texttt{201}, \texttt{204}); la cédula es única; la eliminación cambia el estado sin borrar
+  la fila.
+  \item \textbf{Método de verificación:} \textit{test} (ConductorServiceTest) y
+  \textit{demonstration} (Postman).
+  \item \textbf{Trazabilidad:} HU-002, CU-002, \texttt{ConductorController},
+  evidencia \texttt{docs/mediciones/perf/} (REQ-F-005).
+\end{itemize}
+
+\subsubsection{REQ-F-010 a REQ-F-014 — CRUD de usuarios}
+\begin{itemize}
+  \item \textbf{Tipo:} Funcional. \textbf{Prioridad:} Must (cada uno).
+  \item \textbf{Rationale:} El administrador debe gestionar las cuentas del sistema.
+  \item \textbf{Enunciados:}
+    \begin{description}
+      \item[REQ-F-010] Listado paginado: \texttt{GET /api/usuarios}.
+      \item[REQ-F-011] Consulta por id: \texttt{GET /api/usuarios/\{id\}}.
+      \item[REQ-F-012] Alta: \texttt{POST /api/usuarios}.
+      \item[REQ-F-013] Actualización: \texttt{PUT /api/usuarios/\{id\}}.
+      \item[REQ-F-014] Eliminación lógica: \texttt{DELETE /api/usuarios/\{id\}}.
+    \end{description}
+  \item \textbf{Criterio de aceptación:} Respuestas REST correctas; el rol se restringe a los
+  enumerados (ADMIN, COORDINADOR, SEGURIDAD).
+  \item \textbf{Método de verificación:} \textit{test} (UsuarioController/Service) y
+  \textit{demonstration}.
+  \item \textbf{Trazabilidad:} HU-003, CU-003, \texttt{UsuarioController}.
+\end{itemize}
+
+\subsection{Requisitos no funcionales}
+\label{sec:rnf}
+
+\subsubsection{REQ-NF-001 — Cabeceras de seguridad HTTP}
+\begin{itemize}
+  \item \textbf{Tipo:} No funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} Mitigar ataques de malconfiguración (OWASP A05).
+  \item \textbf{Enunciado:} Toda respuesta HTTP incluirá \texttt{Strict-Transport-Security},
+  \texttt{X-Frame-Options: DENY}, \texttt{X-Content-Type-Options: nosniff} y
+  \texttt{Content-Security-Policy}.
+  \item \textbf{Criterio de aceptación:} \texttt{curl -I} contra la raíz muestra las cuatro
+  cabeceras.
+  \item \textbf{Método de verificación:} \textit{test} y \textit{demonstration}
+  (\texttt{docs/mediciones/sec/A05-*}). \textbf{Estado:} verificado.
+\end{itemize}
+
+\subsubsection{REQ-NF-002 — Cifrado en tránsito}
+\begin{itemize}
+  \item \textbf{Tipo:} No funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} Confidencialidad e integridad (OWASP A02).
+  \item \textbf{Enunciado:} La conexión utilizará TLS v1.3 con suites AEAD.
+  \item \textbf{Criterio de aceptación:} \texttt{curl -v} muestra \texttt{TLSv1.3} y suite
+  \texttt{TLS\_AES\_256\_GCM\_SHA384}.
+  \item \textbf{Método de verificación:} \textit{demonstration}
+  (\texttt{docs/mediciones/sec/A02-*}). \textbf{Estado:} verificado.
+\end{itemize}
+
+\subsubsection{REQ-NF-003 — Rendimiento del listado}
+\begin{itemize}
+  \item \textbf{Tipo:} No funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} El listado de conductores es la consulta más frecuente (ISO/IEC
+  25010, eficiencia de desempeño).
+  \item \textbf{Enunciado:} El \texttt{GET /api/conductores} con caché caliente responderá
+  con p95 menor a 200 ms.
+  \item \textbf{Criterio de aceptación:} Tres corridas k6 (50 VUs, 30 s) con p95 medio de
+  81,43 ms y 0\% de errores.
+  \item \textbf{Método de verificación:} \textit{test} (k6), reporte
+  \texttt{docs/mediciones/perf/REPORT.md}. \textbf{Estado:} verificado.
+\end{itemize}
+
+\subsubsection{REQ-NF-004 — Protección contra inyección}
+\begin{itemize}
+  \item \textbf{Tipo:} No funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} Evitar inyección SQL (OWASP A03).
+  \item \textbf{Enunciado:} Los payloads de entrada se parametrizan estrictamente; los
+  procedimientos almacenados no construyen SQL dinámico.
+  \item \textbf{Criterio de aceptación:} \texttt{POST} con payload \texttt{' OR '1'='1}
+  responde \texttt{422} con ProblemDetails; el auditor
+  \texttt{scripts/audit-sql-dynamic.sh} no reporta violaciones.
+  \item \textbf{Método de verificación:} \textit{test} y \textit{analysis}
+  (\texttt{docs/mediciones/sec/A03-*}). \textbf{Estado:} verificado.
+\end{itemize}
+
+\subsubsection{REQ-NF-005 — Limitación de intentos de login}
+\begin{itemize}
+  \item \textbf{Tipo:} No funcional. \textbf{Prioridad:} Must.
+  \item \textbf{Rationale:} Mitigar fuerza bruta (OWASP A07).
+  \item \textbf{Enunciado:} Seis intentos fallidos consecutivos desde la misma IP responderán
+  \texttt{429 Too Many Requests}.
+  \item \textbf{Criterio de aceptación:} La séptima petición (y siguientes) responde \texttt{429}.
+  \item \textbf{Método de verificación:} \textit{demonstration}
+  (\texttt{docs/mediciones/sec/A07-*}). \textbf{Estado:} verificado.
+\end{itemize}
+
+\subsubsection{REQ-NF-006 — Cobertura de pruebas}
+\begin{itemize}
+  \item \textbf{Tipo:} No funcional. \textbf{Prioridad:} Should (objetivo 60\,\% para la
+  Tercera Entrega, 70\,\% para la Final).
+  \item \textbf{Rationale:} Sostener la calidad y la tendencia creciente entre entregas.
+  \item \textbf{Enunciado:} El reporte JaCoCo sobre el módulo de dominio y servicios alcanzará
+  al menos 60\,\% de instrucciones en la Tercera Entrega.
+  \item \textbf{Criterio de aceptación:} \texttt{jacoco.xml} con cobertura \(\ge\) 60\,\%.
+  \item \textbf{Método de verificación:} \textit{test} (\texttt{docs/mediciones/jacoco/}).
+  \textbf{Estado:} en desarrollo (40,4\,\% al cierre de esta entrega; pendiente de elevar).
+\end{itemize}
+
+\subsection{Requisitos de interfaz externa}
+\label{sec:interfaz}
+
+\begin{itemize}
+  \item \textbf{REQ-IF-001} (Must): La API REST se documentará en OpenAPI 3.0 accesible en
+  \texttt{/api/docs}. Verificación: \textit{inspection} (Swagger UI, Figura 2 del informe).
+  \item \textbf{REQ-IF-002} (Must): Los errores seguirán el formato ProblemDetails (RFC 7807)
+  con \texttt{type}, \texttt{title}, \texttt{status}, \texttt{detail} e \texttt{instance}.
+  Verificación: \textit{test} y \textit{demonstration} (Postman).
+  \item \textbf{REQ-IF-003} (Should): El frontend se comunicará con el backend mediante
+  \textit{cookie} HttpOnly (sin almacenar el JWT en \texttt{localStorage}).
+\end{itemize}
+
+\subsection{Matriz de trazabilidad}
+\label{sec:matriz}
+
+La matriz end-to-end se versiona en \texttt{docs/trazabilidad/matriz.csv} con las columnas
+\texttt{id\_requisito}, \texttt{tipo}, \texttt{prioridad\_moscow},
+\texttt{historia\_usuario}, \texttt{caso\_de\_uso}, \texttt{modulo\_codigo},
+\texttt{endpoint\_api}, \texttt{prueba\_automatizada}, \texttt{tipo\_acceso},
+\texttt{evidencia\_empirica} y \texttt{estado}. Cubre el 100\,\% de los requisitos Must
+(14 funcionales + 5 no funcionales) vigentes en \texttt{v0.9.0-rc} y su validez se comprueba
+en CI con \texttt{scripts/validate-traceability.sh}.
+
+\subsection{Gestión del cambio}
+\label{sec:gestion}
+
+Las modificaciones a los requisitos se registran en \texttt{docs/requisitos/CHANGELOG-REQ.md}
+siguiendo \textit{Keep a Changelog}; las decisiones de diseño que afectan requisitos Must se
+documentan como ADR en \texttt{docs/adr/} (plantilla Nygard).
+
+% ============================================================
+\section*{Declaración de conformidad}
+\addcontentsline{toc}{section}{Declaración de conformidad}
+
+Cada requisito de esta especificación se redactó verificando las nueve características de
+calidad para requisitos individuales y las seis para conjuntos de requisitos del INCOSE Guide
+to Writing Requirements v4 \cite{incose}: Necessary, Appropriate, Unambiguous, Complete,
+Singular, Feasible, Verifiable, Correct, Conforming (C1–C9) y Complete, Consistent, Feasible,
+Comprehensible, Able to be validated, Correct (C10–C15).
+
+% ============================================================
+\newpage
+\printbibliography[title={Referencias}]
+
+\end{document}

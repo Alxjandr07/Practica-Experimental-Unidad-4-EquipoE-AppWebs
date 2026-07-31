@@ -363,16 +363,19 @@ la Figura~\ref{fig:imagen7}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{imagen7}
-    \caption{Resultado de la corrida de carga con k6 (50 VUs, 30 s) sobre el endpoint de
-    listado: 1470 peticiones HTTP, 0{,}00\,\% de tasa de error, tiempo de respuesta
-    p95 = 160{,}556 ms y p99 = 405{,}12 ms, cumpliendo el umbral de \texttt{tiempo\_respuesta
-    < 500 ms}.}
+    \caption{Resultado de las tres corridas de carga con k6 (50 VUs, 30 s) sobre el endpoint de
+    listado: 4468 peticiones HTTP en total, 0{,}00\,\% de tasa de error, tiempo de respuesta
+    p95 medio = 81{,}43 ms y p99 medio = 188{,}16 ms, cumpliendo el umbral de
+    \texttt{tiempo\_respuesta < 500 ms}.}
     \label{fig:imagen7}
 \end{figure}
 
 Los dos \textit{checks} configurados (\texttt{status es 200} y \texttt{tiempo respuesta <
-500ms}) se cumplieron en el 100\,\% de las 2938 verificaciones ejecutadas, sin peticiones
-fallidas (\texttt{http\_req\_failed} = 0{,}00\,\%).
+500ms}) se cumplieron en el 100\,\% de las 8930 verificaciones ejecutadas (4465 por \textit{check}
+en cada una de las tres corridas), sin peticiones
+fallidas (\texttt{http\_req\_failed} = 0{,}00\,\%). El reporte agregado con media,
+desviación típica e intervalo de confianza al 95\,\% se encuentra en
+\texttt{docs/mediciones/perf/REPORT.md}.
 
 \subsection{Seguridad (Bloque C.2)}
 
@@ -488,10 +491,13 @@ la Entrega Final.
 
 \subsection{Accesibilidad y calidad web (Bloque C.5)}
 
-Se ejecutó Lighthouse CI contra el frontend Angular. Los puntajes obtenidos fueron:
-Performance 85, Accessibility 92, Best Practices 90 y SEO 95, cumpliendo con los umbrales
-mínimos establecidos en \texttt{lighthouserc.js} (Performance \(\ge\) 80,
-Accessibility \(\ge\) 90, Best Practices \(\ge\) 90, SEO \(\ge\) 90).
+Se ejecutó Lighthouse CI contra el frontend Angular servido con compresión gzip
+(configuración equivalente a producción, perfil móvil con \textit{throttling} de red
+\textit{Slow 4G}). Los puntajes obtenidos fueron: Performance 100, Accessibility 95,
+Best Practices 100 y SEO 90, cumpliendo con los umbrales mínimos establecidos en
+\texttt{lighthouserc.js} (Performance \(\ge\) 80, Accessibility \(\ge\) 90, Best
+Practices \(\ge\) 90, SEO \(\ge\) 90). Los archivos JSON crudos de cada corrida se
+archivan en \texttt{docs/mediciones/lighthouse/lhci-*.json}.
 
 % ============================================================
 \section{Amenazas a la validez}

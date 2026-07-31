@@ -1,5 +1,5 @@
 id_requisito,tipo,prioridad_moscow,historia_usuario,caso_de_uso,modulo_codigo,endpoint_api,prueba_automatizada,tipo_acceso,evidencia_empirica,estado
-REQ-F-001,Funcional,Must,HU-001,CU-001,AuthController,POST /api/auth/login,AuthServiceTest,CRUD-ORM,docs/mediciones/sec/A01-auth-bypass.log,verificado
+REQ-F-001,Funcional,Must,HU-001,CU-001,AuthController,POST /api/auth/login,AuthServiceTest,CRUD-ORM,docs/mediciones/sec/A01-acceso.txt,verificado
 REQ-F-002,Funcional,Must,HU-001,,AuthController,POST /api/auth/register,AuthServiceTest,CRUD-ORM,,implementado
 REQ-F-003,Funcional,Must,HU-001,,AuthController,POST /api/auth/refresh,AuthServiceTest,CRUD-ORM,,implementado
 REQ-F-004,Funcional,Must,HU-001,,AuthController,POST /api/auth/logout,AuthServiceTest,CRUD-ORM,,implementado
@@ -13,9 +13,9 @@ REQ-F-011,Funcional,Must,HU-003,CU-003,UsuarioController,GET /api/usuarios/{id},
 REQ-F-012,Funcional,Must,HU-003,CU-003,UsuarioController,POST /api/usuarios,,CRUD-ORM,,implementado
 REQ-F-013,Funcional,Must,HU-003,CU-003,UsuarioController,PUT /api/usuarios/{id},,CRUD-ORM,,implementado
 REQ-F-014,Funcional,Must,HU-003,CU-003,UsuarioController,DELETE /api/usuarios/{id},,CRUD-ORM,,implementado
-REQ-NF-001,No funcional,Must,,,SecurityConfig,,,CRUD-ORM,docs/mediciones/sec/A05-security-headers.log,verificado
-REQ-NF-002,No funcional,Must,,,SecurityConfig,,,CRUD-ORM,docs/mediciones/sec/A02-crypto.log,verificado
-REQ-NF-003,No funcional,Must,,,ConductorController,GET /api/conductores,ConductorServiceTest,CRUD-ORM,docs/mediciones/perf/k6-run1.json,verificado
-REQ-NF-004,No funcional,Must,,,GlobalExceptionHandler,,,CRUD-ORM,docs/mediciones/sec/A03-injection.log,verificado
-REQ-NF-005,No funcional,Must,,,AuthController,POST /api/auth/login,,CRUD-ORM,docs/mediciones/sec/A07-rate-limit.log,verificado
-REQ-NF-006,No funcional,Should,,,Backend,,,CRUD-ORM,docs/mediciones/jacoco/report.xml,verificado
+REQ-NF-001,No funcional,Must,,,SecurityConfig,,,CRUD-ORM,docs/mediciones/sec/A05-headers.txt,verificado
+REQ-NF-002,No funcional,Must,,,SecurityConfig,,,CRUD-ORM,docs/mediciones/sec/A02-criptografia.txt,verificado
+REQ-NF-003,No funcional,Must,,,ConductorController,GET /api/conductores,ConductorServiceTest,CRUD-ORM,docs/mediciones/perf/k01-run1.json,verificado
+REQ-NF-004,No funcional,Must,,,GlobalExceptionHandler,,,CRUD-ORM,docs/mediciones/sec/A03-inyeccion.txt,verificado
+REQ-NF-005,No funcional,Must,,,AuthController,POST /api/auth/login,,CRUD-ORM,docs/mediciones/sec/A07-rate-limit.txt,verificado
+REQ-NF-006,No funcional,Should,,,Backend,,,CRUD-ORM,docs/mediciones/jacoco/jacoco.xml,verificado
