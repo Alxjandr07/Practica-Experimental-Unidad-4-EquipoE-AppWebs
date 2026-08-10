@@ -1,0 +1,130 @@
+\section{Seguridad, Pruebas de Rendimiento y Despliegue con Docker}
+\subsection{Auditoría de seguridad OWASP en SGROAS}
+
+Se realizó una auditoría de seguridad sobre la aplicación MVC usando el OWASP Top 10:2021 (A01--A07) más XSS. La
+Tabla~\ref{tab:owasp} resume vulnerabilidad, vector de ataque, contramedida implementada y evidencia en el
+repositorio (directorio \texttt{docs/mediciones/sec/}).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{2.4cm}p{2.9cm}p{3.3cm}p{2.6cm}@{}}
+\toprule
+\textbf{Vulnerabilidad} & \textbf{Vector de ataque} & \textbf{Contramedida implementada} & \textbf{Evidencia} \\
+\midrule
+A01 Control de acceso & Acceso no autorizado a /api/conductores & Reglas por rol en SecurityConfig (ROLE\_ADMIN, ROLE\_COORDINADOR) & A01-acceso.txt \\
+A02 Fallo criptográfico & Robo de credenciales/token & BCrypt, JWT HS256, cookie HttpOnly+Secure+SameSite & A02-criptografia.txt \\
+A03 Inyección & SQL/JPQL malicioso en login & Validación @Valid y consultas JPA parametrizadas & A03-inyeccion.txt (HTTP 422) \\
+A05 Malconfiguración & Cabeceras inseguras & HSTS, X-Frame-Options, CSP, nosniff & A05-headers.txt \\
+A07 Fallos de autenticación & Fuerza bruta en login & Rate limiter (6 intentos/60 s) → HTTP 429 & A07-rate-limit.txt \\
+A09 Monitoreo & Falta de logs & Logging estructurado del filtro JWT & A09-logs.txt \\
+XSS & Script malicioso en el navegador & CSP (default-src 'self') y sanitización de Angular & SecurityConfig + frontend \\
+\bottomrule
+\end{tabular}
+\caption{Resumen de la auditoría OWASP aplicada al PFC.}
+\label{tab:owasp}
+\end{table}
+
+\textbf{A01 — Control de acceso roto.} El vector consiste en invocar \texttt{GET /api/conductores} sin token o con
+un rol insuficiente. La contramedida es la configuración declarativa de seguridad: solo
+\texttt{ROLE\_ADMIN} y \texttt{ROLE\_COORDINADOR} pueden operar sobre los conductores; la evidencia
+\texttt{A01-acceso.txt} registra la respuesta 401/403 obtenida.
+
+\textbf{A02 — Fallos criptográficos.} Los vectores son credenciales débiles, tokens en tránsito o en almacenamiento
+inseguro. Las contramedidas son: cifrado BCrypt para contraseñas, firma HS256 del JWT con clave de mínimo 32
+caracteres, y cookie \texttt{HttpOnly, Secure, SameSite=Strict}. El payload firmado contiene 7 claims
+(RFC 7519), como consta en \texttt{A02-criptografia.txt}.
+
+\textbf{A03 — Inyección.} El vector típico es un payload \texttt{' OR 1=1 --} en el login. La contramedida es doble:
+la validación Jakarta (\texttt{@Email}, \texttt{@NotBlank}) rechaza el payload antes de llegar a la BD con HTTP 422
+(ProblemDetails), y las consultas se construyen con JPA/HQL parametrizado, sin concatenar entrada de usuario, tal
+como se verificó en \texttt{A03-inyeccion.txt}.
+
+\textbf{A05 — Mala configuración de seguridad.} El vector son las cabeceras HTTP inseguras. SGROAS implementa
+\texttt{Strict-Transport-Security} (1 año, includeSubDomains), \texttt{X-Frame-Options: DENY},
+\texttt{X-Content-Type-Options: nosniff}, \texttt{Content-Security-Policy: default-src 'self'} y
+\texttt{Cache-Control: no-cache}, verificados en \texttt{A05-headers.txt}.
+
+\textbf{A07 — Fallos de autenticación.} El vector es la fuerza bruta sobre \texttt{/api/auth/login}. La
+contramedida es \texttt{LoginRateLimiter}, un limitador en memoria (ConcurrentHashMap) que permite 6 intentos
+fallidos por ventana de 60 segundos y responde HTTP 429. La evidencia \texttt{A07-rate-limit.txt} muestra la
+secuencia de intentos y el código 429 obtenido.
+
+\textbf{XSS — Cross-Site Scripting.} El vector es la ejecución de scripts en el navegador mediante datos
+maliciosos. La contramedida principal es la \texttt{Content-Security-Policy} con \texttt{default-src 'self'} y
+\texttt{script-src 'self'}, además del saneamiento automático que realiza Angular por defecto al interpolar
+valores en plantillas.
+
+\subsection{Prueba de carga con k6 (Apache Bench)}
+
+La metodología de prueba de carga del PFC se realizó con \textbf{k6} (también se documentó el uso de Apache Bench
+con \texttt{ab -n <total> -c <concurrentes> http://localhost:8080/api/conductores}). La config fue: \textbf{50
+usuarios virtuales concurrentes} durante 30 segundos, con \textit{ramp-up}, contra el endpoint representativo
+\texttt{GET /api/conductores} (protegido y con caché de Redis caliente). Se ejecutaron 3 corridas independientes
+(archivos \texttt{k01}, \texttt{k02}, \texttt{k03}). Los resultados se resumen en la Tabla~\ref{tab:perf}.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Métrica} & \textbf{Corrida 1} & \textbf{Corrida 2} & \textbf{Corrida 3} & \textbf{Media} \\
+\midrule
+Peticiones & 1466 & 1501 & 1501 & 1489 \\
+p50 (mediana, ms) & 17,88 & 10,48 & 9,13 & --- \\
+p95 (ms) & 173,15 & 34,82 & 36,32 & 81,43 \\
+p99 (ms) & 251,54 & 155,99 & 156,97 & 188,16 \\
+Throughput (req/s) & --- & --- & --- & 49,64 \\
+Errores & 0 & 0 & 0 & 0 \% \\
+\bottomrule
+\end{tabular}
+\caption{Resultados de la prueba de carga (k6, 50 VUs por 30 s, commit 62bf8fa).}
+\label{tab:perf}
+\end{table}
+
+La media de tiempo de respuesta fue de \textbf{22,93 ms}, con un \textbf{p95 de 81,43 ms}, muy por debajo del
+umbral objetivo declarado en \texttt{k6/opts.js} (p95 < 200 ms). El \textbf{throughput alcanzó 49,64 req/s} y la
+\textbf{tasa de error fue 0,00 \%}. La corrida 1 es la más alta (p95 de 173,15 ms) por el arranque de la caché
+caliente; las corridas 2 y 3 estabilizan el p95 por debajo de 40 ms. \textbf{Criterio: Cumplido.}
+
+\subsection{Containerización con Docker Compose}
+
+Docker Compose permite desplegar la aplicación con entornos reproducibles y aislamiento de dependencias. El
+\texttt{docker-compose.yml} del PFC define \textbf{tres servicios} en una red bridge \texttt{sgroas-network}:
+\begin{itemize}
+    \item \textbf{postgres} (postgres:18, puerto 5433:5432, volumen \texttt{sgroas\_postgres\_data}).
+    \item \textbf{redis} (redis:7, puerto 6379) para caché (TTL y blacklist de JWT).
+    \item \textbf{backend} (build local, puerto 8080:8080, con variables de entorno para BD, Redis y JWT).
+\end{itemize}
+
+El \texttt{Dockerfile} es multi-etapa: fase de build con \texttt{eclipse-temurin:21-jdk} (\texttt{./mvnw clean
+package -DskipTests}) y etapa final con \texttt{eclipse-temurin:21-jre} que ejecuta \texttt{java -jar app.jar}. Las
+variables de entorno (\texttt{SPRING\_DATASOURCE\_URL}, \texttt{SPRING\_DATA\_REDIS\_HOST},
+\texttt{APP\_JWT\_SECRET}, \texttt{APP\_JWT\_EXPIRATION\_MS}, etc.) se inyectan desde el entorno y \textbf{nunca
+deben estar en el código fuente}: en el repositorio solo existe \texttt{.env.example} como plantilla, y la
+configuración de desarrollo usa valores por defecto que en producción se sobrescriben. Un despliegue real usaría
+secretos con HashiCorp Vault o los secretos del orquestador (Docker secrets / GitHub Actions secrets). El
+despliegue se verifica con \texttt{docker compose up -d} y \texttt{docker compose ps} (todos los servicios en
+estado \texttt{Up}).
+
+\subsection{Reflexión sobre el proceso de aprendizaje}
+
+\textbf{Tejada Bajaña Luis Alejandro.} A lo largo del desarrollo del PFC, la lección técnica más importante fue
+comprender que la seguridad no es una capa opcional sino una restricción transversal que condiciona el diseño: la
+elección de JWT stateless con refresh token en Redis, el rate limiting de 6 intentos/60 s en el login y las
+contramedidas frente a A01 y A03 debieron decidirse al inicio, no al final. El error más costoso fue asumir que la
+validación en el frontend bastaba; la auditoría demostró que el backend debía validar todo payload con Jakarta
+Validation y devolver ProblemDetails 422 antes de tocar la base de datos. En un proyecto futuro validaría y
+auditaría la seguridad de forma continua (security-by-design) y aplicaría los principios de \textit{Release It!}
+(timeouts, reintentos y fallas parciales) al consumo de servicios externos desde la primera iteración.
+
+\textbf{Alava Alvarado Jean Pierre.} La experiencia de la evaluación cruzada me permitió entender el valor del
+código documentado y de las decisiones registradas en ADR: al revisar un proyecto ajeno, los ADR y la colección
+Postman fueron la mejor puerta de entrada para comprender por qué se eligió el monolito con Spring Boot y cómo se
+resolvió la revocación de JWT con la blacklist de Redis. El error que identifiqué como más costoso en términos de
+comunicación es no mantener actualizada la versión del frontend en la documentación (el README indica Angular 17
+mientras el \texttt{package.json} declara Angular 20), lo que genera fricción en el equipo. En el futuro priorizaría
+registrar la trazabilidad éxito-criterio desde el inicio (como la matriz \texttt{docs/trazabilidad/matriz.csv}) y
+ejecutar la prueba de carga con caché fría y caliente desde los primeros entregables, para detectar pronto los
+puntos de degradación.

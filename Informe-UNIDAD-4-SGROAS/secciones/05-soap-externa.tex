@@ -1,0 +1,64 @@
+\section{Consumo de Servicios Web Externos y SOAP}
+\subsection{SOAP vs. REST: análisis técnico comparativo}
+
+SOAP (\textit{Simple Object Access Protocol}) es un protocolo de intercambio de mensajes basado en XML que describe
+sus contratos mediante \textbf{WSDL} (\textit{Web Services Description Language}). Los mensajes viajan sobre HTTP,
+SMTP o TCP y cada operación se identifica mediante una \textit{SOAPAction}. REST, en cambio, es un estilo
+arquitectónico que usa cualquier formato de representación (JSON preferido), se apoya únicamente en HTTP y su
+descripción es opcional (OpenAPI). En la Tabla~\ref{tab:soap} se comparan ambos enfoques.
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}p{3.2cm}p{4.6cm}p{4.6cm}@{}}
+\toprule
+\textbf{Criterio} & \textbf{SOAP} & \textbf{REST} \\
+\midrule
+Formato del mensaje & XML (Envelope) & JSON / XML / texto \\
+Overhead de serialización & Alto (envoltorio e.g. envelopes) & Bajo \\
+Tipado & Fuerte (esquemas XSD) & Débil (schemas opcionales) \\
+Interoperabilidad & Muy alta (estándares WS-*) & Alta (más simple) \\
+Facilidad desde JavaScript & Baja (requiere librerías) & Alta (fetch/Ajax nativo) \\
+Casos de uso vigentes & Banca, sector público, SRI & Aplicaciones web modernas \\
+\bottomrule
+\end{tabular}
+\caption{Comparación SOAP vs. REST para el PFC.}
+\label{tab:soap}
+\end{table}
+
+En 2025, SOAP sigue vigente en la banca, el sector público ecuatoriano y servicios del SRI, donde los estándares
+WS-Security y la trazabilidad contractual son requisitos normativos. Para SGROAS, sin embargo, REST es la elección
+correcta: el frontend Angular consume JSON de forma nativa, no se requieren transacciones distribuidas WS-\texttt{*}
+y el contrato se documenta con OpenAPI. Esta decisión es consistente con el enfoque de API REST moderna del PFC.
+
+\subsection{Clientes HTTP del lado del servidor}
+
+Para el consumo de APIs externas desde el servidor, los frameworks ofrecen clientes dedicados: \textbf{GuzzleHTTP}
+en PHP, \textbf{HttpClient} en .NET, y \textbf{RestTemplate / WebClient} en Java/Spring. El \texttt{WebClient}
+reactivo ofrece manejo de \textit{timeout}, reintentos con \textit{backoff exponencial} y concurrencia no
+bloqueante; \texttt{RestTemplate} es la alternativa síncrona clásica. En la integración futura del PFC con una API
+externa se implementará \texttt{WebClient} con configuración de \textit{connect timeout} y \textit{read timeout},
+manejo de errores 4xx/5xx mediante \texttt{onErrorResume} y política de reintentos con espera exponencial, de
+acuerdo a las buenas prácticas de \textit{Release It!}. El proyecto ya centraliza el manejo de errores HTTP en
+\texttt{GlobalExceptionHandler} (ProblemDetails RFC 7807), lo que facilita convertir los errores de la API externa
+en respuestas JSON estructuradas de la forma \texttt{\{success, data, message, errors, meta\}} que exige la guía.
+
+\subsection{Caché de respuestas externas}
+
+Las APIs externas imponen límites de \textit{rate limiting}; por ello sus respuestas deben cachearse para evitar
+superar cuotas, reducir la latencia y protegerse ante indisponibilidad del proveedor. El patrón \textbf{cache
+aside} implementado en SGROAS (ya aplicado a sus propios listados) consiste en consultar primero Redis; si hay
+\textit{hit}, se devuelve la respuesta cacheada; si hay \textit{miss}, se consulta el origen (BD o API externa), se
+almacena en caché con un TTL y se responde. La configuración usa \texttt{@Cacheable} y \texttt{@CacheEvict} en los
+servicios y un TTL por defecto de \texttt{app.cache.default-ttl=300} segundos. La caché externa se confirmará en
+Redis con \texttt{redis-cli KEYS "*api\_externa*"}, según el criterio de verificación de la guía.
+
+\subsection{Tendencias: Jamstack y APIs en 2025}
+
+El patrón \textbf{Jamstack} (JavaScript + APIs + Markup) separa frontend y backend: los generadores de sitios
+estáticos (Next.js, Nuxt.js, Astro) consumen APIs en \textit{build time} o \textit{runtime}. SGROAS sigue una
+variante SPA con Angular y un backend de API, alineado con esta tendencia. Finalmente, la \textbf{IA generativa}
+está transformando el desarrollo web: herramientas como GitHub Copilot y scaffolding inteligente aceleran la
+producción de código, pero plantean riesgos éticos respecto a la propiedad intelectual del código generado y a la
+responsabilidad del desarrollador de validar la seguridad y corrección de ese código.
