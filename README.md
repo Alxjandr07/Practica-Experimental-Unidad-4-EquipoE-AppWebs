@@ -11,6 +11,22 @@
 > **Grupo D** — Universidad Técnica Estatal de Quevedo (UTEQ) — FCC — Carrera de Ingeniería de Software
 > Aplicaciones Web — Quinto Nivel — Periodo 2026-2027
 
+## Actividad combinada: PFC + Práctica Experimental Unidad IV
+
+Este repositorio corresponde a una **actividad combinada** entre el **Proyecto Fin de Curso (PFC)** y la
+**Práctica Experimental de la Unidad IV** de la asignatura Aplicaciones Web. El proyecto evaluado es **SGROAS**
+(sistema de gestión de recursos operativos, administrativos y de seguridad de una cooperativa de transporte
+interprovincial).
+
+Como parte de la dinámica, los integrantes realizarán una **retroalimentación cruzada**: cada miembro revisa el
+proyecto, identifica fortalezas y brechas, y propone mejoras. Para documentar ese proceso se incluyen:
+
+- 📄 **[Informe técnico de la Práctica Unidad IV](Informe-UNIDAD-4-SGROAS/Informe_Unidad4_SGROAS.tex)** — fundamento
+  teórico completo (MVC, APIs REST/Fielding, JWT, SOAP, seguridad OWASP, pruebas de carga y Docker) junto con la
+  versión editable en [Word](Informe-UNIDAD-4-SGROAS/Informe_Unidad4_SGROAS.docx).
+- 🔎 **[Autoevaluación del proyecto](Informe-UNIDAD-4-SGROAS/AUTOEVALUACION-SGROAS.md)** — análisis de las cosas que
+  faltan y que deberían mejorar en SGROAS para cumplir los criterios de la práctica, con plan de mejora y prioridades.
+
 ## Integrantes
 
 | Integrante | Rol |
