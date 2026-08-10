@@ -26,6 +26,9 @@ proyecto, identifica fortalezas y brechas, y propone mejoras. Para documentar es
   versión editable en [Word](Informe-UNIDAD-4-SGROAS/Informe_Unidad4_SGROAS.docx).
 - 🔎 **[Autoevaluación del proyecto](Informe-UNIDAD-4-SGROAS/AUTOEVALUACION-SGROAS.md)** — análisis de las cosas que
   faltan y que deberían mejorar en SGROAS para cumplir los criterios de la práctica, con plan de mejora y prioridades.
+- 🧑‍🏫 **[Evaluación del proyecto del compañero (PRESUS)](EVALUACION-PRESUS-EquipoE.md)** — rúbrica con calificación
+  por criterio del proyecto PRESUS (rama `PresusWeb`), puntos fuertes, brechas críticas y retroalimentación para la
+  defensa.
 
 ## Integrantes
 
