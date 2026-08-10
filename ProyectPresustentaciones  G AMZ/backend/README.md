@@ -2,6 +2,15 @@
 
 Sistema integral para la gestión de pre-sustentaciones de trabajos de titulación en la Universidad Técnica Estatal de Quevedo.
 
+## 🧑‍🏫 Evaluación cruzada — Práctica Experimental Unidad IV
+
+Como parte de la actividad combinada (PFC + Práctica Experimental de la Unidad IV), este proyecto fue evaluado por
+un integrante del Equipo E. Los resultados de la **evaluación con rúbrica y calificación por criterio** se
+encuentran en:
+
+- 📊 **[Evaluación del proyecto PRESUS](EVALUACION-PRESUS-EquipoE.md)** — calificación por criterio, puntos fuertes,
+  brechas críticas y retroalimentación para la mejora y la defensa.
+
 ## 🚀 Tecnologías
 
 - **Java 17**
