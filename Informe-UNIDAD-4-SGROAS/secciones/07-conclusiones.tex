@@ -1,0 +1,11 @@
+\section{Conclusiones}
+El PFC SGROAS cumple satisfactoriamente los criterios de la Unidad IV: implementa el patrón MVC con Spring Boot
+3.5, expone una API REST siguiendo los principios de Fielding con un grado de cumplimiento alto (4/5 de los
+principios obligatorios), protege el acceso con autenticación JWT stateless de 1 hora con refresh token de 7 días y
+blacklist en Redis, documenta la API con OpenAPI 2.8.6 accesible en Swagger UI, y cuenta con 150 pruebas JUnit 5
+con cobertura de líneas del 99,7\% y ramas del 85,4\% (JaCoCo). La prueba de carga con k6 (50 VUs) arrojó un p95
+de 81,43 ms con 0\% de errores, superando el umbral propuesto. La auditoría OWASP (A01--A07 y XSS) evidencia
+contramedidas verificables en \texttt{docs/mediciones/sec/}. Finalmente, el despliegue con Docker Compose reproduce
+el entorno con PostgreSQL, Redis y el backend en una sola red. Como trabajo futuro se plantea la integración formal
+de una API externa con \texttt{WebClient}, reintentos con backoff exponencial y caché con TTL por dominio, además
+de la mejora del frontend Angular como primer plano de la defensa.

@@ -1,0 +1,57 @@
+\section*{Anexo C --- Preguntas de Análisis}
+\addcontentsline{toc}{section}{Anexo C --- Preguntas de Análisis}
+\subsection*{C.1 [Evaluación / Bloom nivel 6] --- La decisión técnica más difícil}
+
+Revisando el PFC completo (PE-U1 a PE-U4), la decisión técnica más difícil fue elegir entre \textbf{arquitectura
+monolítica y microservicios} (ADR-001). Se consideraron microservicios con Spring Cloud para aislar los módulos de
+operaciones, administración y seguridad, pero se descartaron por la complejidad inicial (transacciones distribuidas,
+consistencia eventual, despliegue multi-contenedor) y porque el equipo es pequeño y el dominio (una cooperativa de
+transporte) no exige escalamiento independiente por módulo. Se eligió el monolito modular con capas Controller →
+Service → Repository, empaquetado como un único JAR. Con el conocimiento actual, el equipo tomaría \textbf{la misma
+decisión}: el monolito simplificó el desarrollo, las pruebas y el despliegue y permitió alcanzar una cobertura del
+99,7\% de líneas. La migración a microservicios solo sería necesaria si el sistema debiera escalar a decenas de
+miles de usuarios concurrentes o si equipos independientes debieran desplegar módulos de forma autónoma.
+
+\subsection*{C.2 [Síntesis / Bloom nivel 5] --- Escalado a 500 usuarios concurrentes}
+
+Los resultados de la prueba de carga mostraron \textbf{49,64 req/s} con 0\% de error bajo 50 VUs. Si se exigiera
+soportar \textbf{500 usuarios concurrentes con una tasa de error de 0\%}, serían necesarios cambios de arquitectura
+y código en tres ejes: \textbf{(1) Infraestructura}: desplegar múltiples réplicas del backend detrás de un balanceador
+nginx y mover las sesiones/estado a recursos compartidos; como la autenticación es JWT stateless (sin sesiones en
+servidor), las réplicas pueden escalar horizontalmente sin \textit{sticky sessions}. \textbf{(2) Caché}: dado que la
+prueba actual ya usa Redis en caliente, se amplificaría el uso de \texttt{@Cacheable} para todos los listados con
+TTL por dominio y se añadiría una capa CDN (CloudFront) para respuestas públicas. \textbf{(3) Código}: se
+configurarían el \textit{connection pool} de HikariCP (tamaño máximo acorde a concurrencia), \textit{timeouts} de
+base de datos y reintentos con backoff exponencial; se implementaría una cola de mensajes (por ejemplo, RabbitMQ)
+para las tareas de reportes que no requieren respuesta síncrona. La arquitectura escalada añade una capa
+\textbf{Load Balancer → N × backend → PostgreSQL (Primary/Replica) + Redis cluster}. El k6 verificaría el nuevo SLO
+con \texttt{vus=500}, \texttt{duration=60s} y umbrales \texttt{p(99)<300ms} y \texttt{http\_req\_failed<0.01}.
+
+\subsection*{C.3 [Análisis / Bloom nivel 4] --- Principios REST cumplidos en SGROAS}
+
+Analizando la API contra los 6 principios de Fielding: \textbf{cumple completamente} Client-Server (frontend y
+backend separados), Stateless (JWT sin sesiones), Uniform Interface (sustantivos + verbos HTTP semánticos) y
+Cacheable a nivel de servidor (Redis con \texttt{@Cacheable}). \textbf{Cumple parcialmente} Layered System, porque
+todavía no hay proxy/nginx delante del backend en el despliegue base (la arquitectura ya está preparada, aunque el
+cliente podría distinguir capas internas si inspeccionara la infraestructura), y Cacheable a nivel de cliente (las
+respuestas autenticadas usan \texttt{Cache-Control: no-cache}). \textbf{No cumple} Code-On-Demand, que es opcional.
+El \textbf{costo de no cumplir} Layered System plenamente es menor en este contexto académico: al tratarse de un
+monolito desplegado directo en el puerto 8080, la ausencia de un proxy intermedio no compromete la seguridad
+mientras se mantengan HSTS, CORS restringido y cabeceras de seguridad; el costo real aparecería en producción con
+tráfico real, donde un proxy aportaría terminación TLS, compresión y \textit{rate limiting} a nivel de borde.
+
+\subsection*{C.4 [Evaluación / Bloom nivel 6] --- Comparación con un sistema de producción real}
+
+Comparando SGROAS con un sistema web de producción real del mismo dominio (una plataforma de gestión de flotas de
+transporte), las características de calidad cubiertas según \textbf{ISO/IEC 25010:2023} son: \textit{funcionalidad}
+(CRUD completo de 6 entidades más autenticación), \textit{rendimiento} (p95 de 81,43 ms bajo 50 VUs),
+\textit{seguridad} (OWASP A01--A07 aplicado, JWT con refresh token, BCrypt), \textit{fiabilidad} (0\% de errores en
+la prueba de carga, respaldo con RPO 24 h / RTO 4 h) y \textit{mantenibilidad} (cobertura de líneas del 99,7\%,
+documentación en ADR y OpenAPI). Para ser comercialmente viable se requeriría trabajo adicional en:
+\textit{portabilidad} (autenticación multifactor, gestión de accesos por licencia), \textit{operabilidad en
+producción} (health checks, monitorización con métricas \texttt{/actuator/prometheus}, alertas), \textit{usabilidad
+a escala} (pruebas con usuarios reales más allá del SUS de 63 puntos), \textit{interoperabilidad} (integración con
+facturación electrónica del SRI, pagos y API externa de mapas), y \textit{recuperación ante desastres} (activo-pasivo
+con PostgreSQL streaming replication y backups automáticos validados). Estimación de tiempo para hacerlo
+comercialmente viable: aproximadamente \textbf{4 a 6 meses} con un equipo de 3 desarrolladores, priorizando
+monitorización, integración con el SRI y el frontend móvil responsive.
