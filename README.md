@@ -19,7 +19,7 @@ proyecto de su compañero, identifica fortalezas y brechas, y propone mejoras.
 
 - 📄 **[Informe técnico de la Práctica Unidad IV](ProyectPresustentaciones  G AMZ/Informe-UNIDAD-4-PRESUS/Informe_Unidad4_PRESUS.tex)** — fundamento teórico completo de la Unidad IV (MVC, APIs REST/Fielding, JWT, SOAP, seguridad OWASP, pruebas de carga y Docker) junto con la versión editable en [Word](ProyectPresustentaciones  G AMZ/Informe-UNIDAD-4-PRESUS/Informe_Unidad4_PRESUS.docx).
 - 🔎 **[Autoevaluación del proyecto PRESUS](ProyectPresustentaciones  G AMZ/Informe-UNIDAD-4-PRESUS/AUTOEVALUACION-PRESUS.md)** — análisis de las cosas que faltan y que deberían mejorar en PRESUS, con plan de mejora y prioridades.
-- 🧑‍🏫 **[Evaluación del proyecto del compañero (SGROAS)](ProyectPresustentaciones  G AMZ/EVALUACION-SGROAS-Por-JeanPierre.md)** — *[EN PROCESO]* rúbrica con calificación por criterio del proyecto SGROAS de tu compañero Alejandro Tejada (puntos fuertes, brechas críticas y retroalimentación).
+- 🧑‍🏫 **[Evaluación del proyecto del compañero (SGROAS)](ProyectPresustentaciones  G AMZ/EVALUACION-SGROAS-Por-JeanPierre.md)** — autoevaluación/retroalimentación con diagnóstico del proyecto SGROAS de tu compañero Alejandro Tejada (estado del frontend, brechas funcionales y recomendaciones frente a la guía PE-U4).
 - 📄 **[Evaluación recibida — críticas a PRESUS](ProyectPresustentaciones  G AMZ/EVALUACION-PRESUS-EquipoE.md)** — rúbrica con calificación por criterio de PRESUS realizada por tu compañero Alejandro Tejada.
 
 ## 🚀 Tecnologías
