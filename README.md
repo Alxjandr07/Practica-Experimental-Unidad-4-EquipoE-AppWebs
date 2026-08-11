@@ -27,6 +27,7 @@ proyecto, identifica fortalezas y brechas, y propone mejoras. Para documentar es
 - 🔎 **[Autoevaluación del proyecto](Informe-UNIDAD-4-SGROAS/AUTOEVALUACION-SGROAS.md)** — análisis de las cosas que
   faltan y que deberían mejorar en SGROAS para cumplir los criterios de la práctica, con plan de mejora y prioridades.
 - 🔎 **[Autoevaluación del proyecto — Jean Pierre](Informe-UNIDAD-4-SGROAS/AUTOEVALUACION-SGROAS-JeanPierre.md)** — análisis de autoevaluación individual realizado por Jean Pierre Alava Alvarado, con diagnóstico de brechas, matriz de prioridades y plan de mejora.
+- 🧑‍🏫 **[Evaluación del proyecto del compañero (PRESUS)](ProyectPresustentaciones%20%20G%20AMZ/EVALUACION-PRESUS-EquipoE.md)** — rúbrica con calificación por criterio del proyecto PRESUS, puntos fuertes, brechas críticas y retroalimentación para la defensa.
 
 ## Integrantes
 
