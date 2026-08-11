@@ -29,6 +29,9 @@ proyecto, identifica fortalezas y brechas, y propone mejoras. Para documentar es
 - 🧑‍🏫 **[Evaluación del proyecto del compañero (PRESUS)](EVALUACION-PRESUS-EquipoE.md)** — rúbrica con calificación
   por criterio del proyecto PRESUS (rama `PresusWeb`), puntos fuertes, brechas críticas y retroalimentación para la
   defensa.
+- 📄 **[Evaluación recibida — críticas a SGROAS](Informe-UNIDAD-4-SGROAS/AUTOEVALUACION-SGROAS-JeanPierre.md)** —
+  autoevaluación/retroalimentación de Jean Pierre Alava sobre SGROAS (estado del frontend, brechas funcionales y
+  recomendaciones frente a los criterios de la guía PE-U4).
 
 ## Integrantes
 
